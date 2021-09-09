@@ -1,0 +1,18 @@
+[package]
+name = "rule_segmenter"
+description = "Implement Rule Segmenter"
+version = "0.1.0"
+authors = ["Makoto Kato <m_kato@ga2.so-net.ne.jp>"]
+edition = "2018"
+license = "Apache-2.0 OR MIT"
+repository = "https://github.com/makotokato/rule"
+keywords = ["unicode"]
+categories = ["text-processing"]
+
+[build-dependencies]
+unicode-width = "0.1.7"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[features]
+default = []
