@@ -5,15 +5,13 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
-const WORD_SEGMENTER_JSON: &[u8; 254903] = include_bytes!("data/w.json");
+const WORD_SEGMENTER_JSON: &[u8; 256368] = include_bytes!("data/w.json");
 
 #[derive(Deserialize, Debug)]
 struct SegmenterPropertyValueMap {
-    alphabetic: Option<bool>,
     codepoint: Option<Vec<u32>>,
-    general_category: Option<String>,
-    line_break: Option<String>,
-    script: Option<String>,
+    left: Option<String>,
+    right: Option<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -48,26 +46,23 @@ fn set_break_state(
     right_index: usize,
     break_state: i8,
 ) {
-    if break_state_table[left_index as usize * property_length + right_index as usize]
-        == UNKNOWN_RULE
-    {
-        break_state_table[left_index as usize * property_length + right_index as usize] =
-            break_state;
+    if break_state_table[left_index * property_length + right_index] == UNKNOWN_RULE {
+        println!("{} {} = {}", left_index, right_index, break_state);
+        break_state_table[left_index * property_length + right_index] = break_state;
     }
 }
 
 fn main() {
-    //let mut properties_map: [u8; 0x200000] = [0; 0x200000];
     let mut properties_map: [u8; 0x10000] = [0; 0x10000];
     let mut properties_names = Vec::<String>::new();
 
     let word_segmenter: SegmenterRuleTable =
         serde_json::from_slice(WORD_SEGMENTER_JSON).expect("JSON syntax error");
 
-    for p in word_segmenter.tables {
+    for p in &word_segmenter.tables {
         properties_names.push(p.name.clone());
 
-        if let Some(codepoint) = p.value.codepoint {
+        if let Some(codepoint) = p.value.codepoint.clone() {
             for c in codepoint {
                 if c >= 0x10000 {
                     break;
@@ -75,10 +70,8 @@ fn main() {
                 println!("{} = {}", c, properties_names.len());
                 properties_map[c as usize] = properties_names.len() as u8;
             }
+            continue;
         }
-        if let Some(alphabetic) = p.value.alphabetic {}
-
-        if let Some(line_break) = p.value.line_break {}
     }
 
     println!("property length={}", properties_names.len());
@@ -100,6 +93,7 @@ fn main() {
                 // Special case: left is Any
                 for r in &rule.right {
                     if r == "Any" {
+                        // Fill all unknown state.
                         for i in 0..rule_size {
                             if break_state_table[i] == UNKNOWN_RULE {
                                 break_state_table[i] = break_state;
@@ -120,8 +114,8 @@ fn main() {
                 }
                 continue;
             }
-            println!("left={}", l);
             let left_index = properties_names.iter().position(|n| n.eq(l)).unwrap();
+            println!("left={} {}", l, left_index);
             for r in &rule.right {
                 // Special case: right is Any
                 if r == "Any" {
@@ -137,6 +131,7 @@ fn main() {
                     continue;
                 }
                 let right_index = properties_names.iter().position(|n| n.eq(r)).unwrap();
+                println!("right={} {}", r, right_index);
                 set_break_state(
                     &mut break_state_table,
                     properties_names.len(),
@@ -144,6 +139,21 @@ fn main() {
                     right_index,
                     break_state,
                 );
+            }
+        }
+    }
+
+    let property_length = properties_names.len();
+
+    // State machine alias
+    for p in &word_segmenter.tables {
+        if let Some(left) = p.value.left.clone() {
+            if let Some(right) = p.value.right.clone() {
+                println!("{} {}", left, right);
+                let left_index = properties_names.iter().position(|n| n.eq(&left)).unwrap();
+                let right_index = properties_names.iter().position(|n| n.eq(&right)).unwrap();
+                let index = properties_names.iter().position(|n| n.eq(&p.name)).unwrap();
+                 break_state_table[left_index * property_length + right_index] = index as i8;
             }
         }
     }
@@ -202,7 +212,7 @@ fn main() {
     for c in break_state_table.iter() {
         write!(out, "{: >4},", c);
         i += 1;
-        if (i % properties_names.len()) == 0 {
+        if ((i - 1) % properties_names.len()) == 0 {
             writeln!(out, "");
             if (i / properties_names.len()) < properties_names.len() {
                 writeln!(out, "// {}", properties_names[i / properties_names.len()]);
@@ -218,6 +228,7 @@ fn main() {
     );
 
     let mut i = 1;
+    writeln!(out, "// (Unmapped) = 0");
     for p in properties_names.iter() {
         writeln!(out, "// {} = {}", p, i);
         i += 1;

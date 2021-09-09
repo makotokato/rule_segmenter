@@ -279,6 +279,18 @@ print("{ \"name\": \"Double_Quote\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 
+# MidNumLet
+v = [0x002e, 0x2018, 0x2019, 0x2024, 0xfe52, 0xfe07, 0xfe0e]
+print("{ \"name\": \"MidNumLet\", \"value\": { \"codepoint\":")
+print(v)
+print("}},")
+
+# MidLetter
+v = [0x003a, 0x00b7, 0x0387, 0x055f, 0x05f4, 0x2027, 0xfe13, 0xfe55, 0xff1a]
+print("{ \"name\": \"MidLetter\", \"value\": { \"codepoint\":")
+print(v)
+print("}},")
+
 # MidNum
 v = get_linebreak_list("IS") # LineBreak = Infix Numeric Separator
 v.append(0x066c)
@@ -337,7 +349,23 @@ v = get_emoji_list("Extended_Pictographic")
 v.sort()
 print("{ \"name\": \"Extended_Pictographic\", \"value\": { \"codepoint\":")
 print(v)
-print("}}")
+print("}},")
+
+# Alias
+# (WB7)
+print("{ \"name\": \"ALetter_MidLetter\", \"value\": { \"left\": \"ALtter\", \"right\": \"MidLetter\" }},")
+print("{ \"name\": \"ALetter_MidNumLet\", \"value\": { \"left\": \"ALetter\", \"right\": \"MidNumLet\" }},")
+print("{ \"name\": \"ALetter_Single_Quote\", \"value\": { \"left\": \"ALetter\", \"right\": \"Single_Quote\" }},")
+print("{ \"name\": \"Hebrew_Letter_MidLetter\", \"value\": { \"codepoint\": [] }},")
+print("{ \"name\": \"Hebrew_Letter_MidNumLet\", \"value\": { \"codepoint\": [] }},")
+print("{ \"name\": \"Hebrew_Letter_Single_Quote\", \"value\": { \"codepoint\": [] }},")
+print("{ \"name\": \"Hebrew_Letter_Double_Quote\", \"value\": { \"codepoint\": [] }},")
+# (WB11)
+print("{ \"name\": \"Numeric_MidNum\", \"value\": { \"left\": \"Numeric\", \"right\": \"MidNum\" }},")
+print("{ \"name\": \"Numeric_MidNumLet\", \"value\": { \"left\": \"Numeric\", \"right\": \"MidNumLet\" }},")
+print("{ \"name\": \"Numeric_Single_Quote\", \"value\": { \"codepoint\": [] }},")
+# (WB15)
+print("{ \"name\": \"RI_RI\", \"value\": { \"codepoint\": [] }}")
 
 print("], \"rules\": [")
 # WB3
@@ -348,16 +376,24 @@ print("{ \"left\": [\"CR\"], \"right\": [\"LF\"], \"break_state\": false },")
 print("{ \"left\": [\"ZWJ\"], \"right\": [\"Extended_Pictographic\"], \"break_state\": false },")
 # WB3d
 print("{ \"left\": [\"WSegSpace\"], \"right\": [\"WSegSpace\"], \"break_state\": false },")
+# WB4
+# print("{ \"left\": [\"X\"], \"right\": [\"Extend\", \"Format\", \"ZWJ\"], \"value\": \"X\" },")
 # WB5
 print("{ \"left\": [\"ALetter\", \"Hebrew_Letter\"], \"right\": [\"ALetter\", \"Hebrew_Letter\"], \"break_state\": false },")
+# WB7
+print("{ \"left\": [ \"ALetter_MidLetter\", \"ALetter_MidNumLet\", \"ALetter_Single_Quote\", \"Hebrew_Letter_MidLetter\", \"Hebrew_Letter_MidNumLet\", \"Hebrew_Letter_Single_Quote\"], \"right\": [\"ALetter\", \"Hebrew_Letter\"], \"break_state\": false },")
 # WB7a
 print("{ \"left\": [ \"Hebrew_Letter\"], \"right\": [\"Single_Quote\"], \"break_state\": false },")
+# WB7b/WB7c
+print("{ \"left\": [ \"Hebrew_Letter_Double_Quote\"], \"right\": [\"Hebrew_Letter\"], \"break_state\": false },")
 # WB8
 print("{ \"left\": [\"Numeric\"], \"right\": [\"Numeric\"], \"break_state\": false },")
 # WB9
 print("{ \"left\": [\"ALetter\", \"Hebrew_Letter\"], \"right\": [\"Numeric\"], \"break_state\": false },")
 # WB10
 print("{ \"left\": [\"Numeric\"], \"right\": [\"ALetter\", \"Hebrew_Letter\"], \"break_state\": false },")
+# WB11/WB12
+print("{ \"left\": [\"Numeric_MidNum\", \"Numeric_MidNumLet\", \"Numeric_Single_Quote\"], \"right\": [\"Numeric\"], \"break_state\": false },")
 # WB13
 print("{ \"left\": [\"Katakana\"], \"right\": [\"Katakana\"], \"break_state\": false },")
 # WB13a
