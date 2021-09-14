@@ -8,6 +8,13 @@ mod tests {
 
     #[test]
     fn rule_break() {
+
+        let input: [u8; 3] = [0x5F, 0x31, 0x3A];
+        let mut iter = WordBreakIteratorLatin1::new(&input);
+        assert_eq!(Some(0), iter.next());
+        assert_eq!(Some(2), iter.next());
+        assert_eq!(Some(3), iter.next());
+
         let input: [u8; 3] = [0x61, 0x3a, 0x61];
         let mut iter = WordBreakIteratorLatin1::new(&input);
         assert_eq!(Some(0), iter.next());
