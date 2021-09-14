@@ -68,6 +68,8 @@
 { "name": "Numeric_Single_Quote", "value": { "codepoint": [] }},
 { "name": "RI_RI", "value": { "codepoint": [] }}
 ], "rules": [
+{ "left": ["sot"], "right": ["Any"], "break_state": true },
+{ "left": ["Any"], "right": ["eot"], "break_state": true },
 { "left": ["CR"], "right": ["LF"], "break_state": false },
 { "left": ["ZWJ"], "right": ["Extended_Pictographic"], "break_state": false },
 { "left": ["WSegSpace"], "right": ["WSegSpace"], "break_state": false },
