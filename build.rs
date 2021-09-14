@@ -5,7 +5,7 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
-const WORD_SEGMENTER_JSON: &[u8; 256542] = include_bytes!("data/w.json");
+const WORD_SEGMENTER_JSON: &[u8; 256661] = include_bytes!("data/w.json");
 
 #[derive(Deserialize, Debug)]
 struct SegmenterPropertyValueMap {
@@ -152,6 +152,16 @@ fn main() {
                     right_index,
                     break_state,
                 );
+                // Fill not match
+                for i in 0..properties_names.len() {
+                    set_break_state(
+                        &mut break_state_table,
+                        properties_names.len(),
+                        left_index,
+                        i,
+                        NOT_MATCH_RULE,
+                    );
+                }
             }
         }
     }

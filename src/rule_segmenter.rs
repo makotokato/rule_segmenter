@@ -153,7 +153,7 @@ macro_rules! break_iterator_impl {
                             continue;
                         }
                         if break_state == NOT_MATCH_RULE {
-                            println!("NOT_MATCH_RURLE");
+                            println!("NOT_MATCH_RULE={}", previous_pos_data.unwrap().0);
                             self.iter = previous_iter;
                             self.current_pos_data = previous_pos_data;
                             return Some(previous_pos_data.unwrap().0);
