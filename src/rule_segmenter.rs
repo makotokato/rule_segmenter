@@ -1,8 +1,9 @@
 use core::char;
+use core::str::CharIndices;
 
 include!(concat!(env!("OUT_DIR"), "/generated_table.rs"));
 
-fn get_break_property_utf32_with_rule(codepoint: u32) -> u8 {
+fn get_break_property_utf32(codepoint: u32) -> u8 {
     let codepoint = codepoint as usize;
     if codepoint >= 0x20000 {
         panic!("Unspoorted");
@@ -17,15 +18,15 @@ fn get_break_property_latin1(codepoint: u8) -> u8 {
 }
 
 #[inline]
-fn get_break_property_with_rule(codepoint: char) -> u8 {
-    get_break_property_utf32_with_rule(codepoint as u32)
+fn get_break_property_utf8(codepoint: char) -> u8 {
+    get_break_property_utf32(codepoint as u32)
 }
 
 #[inline]
 fn is_break_from_table(rule_table: &[i8], property_count: usize, left: u8, right: u8) -> bool {
     if left == 0 || right == 0 {
-        println!("unimplemeneted ANY");
-        return false;
+        // not mapped
+        return true;
     }
     let rule = rule_table[((left as usize) - 1) * property_count + (right as usize) - 1];
     if rule == KEEP_RULE {
@@ -40,16 +41,16 @@ fn is_break_from_table(rule_table: &[i8], property_count: usize, left: u8, right
 
 #[inline]
 fn get_break_state_from_table(rule_table: &[i8], property_count: usize, left: u8, right: u8) -> i8 {
-    println!("left={} right={}", left, right);
     if left == 0 || right == 0 {
-        println!("unimplemeneted ANY");
-        return KEEP_RULE;
+        // not mapped
+        return BREAK_RULE;
     }
+    println!("left={} right={}", left, right);
     println!(
         "break={}",
         rule_table[((left as usize) - 1) * property_count + (right as usize) - 1]
     );
-    rule_table[((left as usize) - 1) * property_count + (right as usize) - 1]
+    rule_table[((left as usize) - 1) * property_count + (right as usize - 1)]
 }
 
 macro_rules! break_iterator_impl {
@@ -68,6 +69,17 @@ macro_rules! break_iterator_impl {
             type Item = usize;
 
             fn next(&mut self) -> Option<Self::Item> {
+                if self.current_pos_data.is_none() {
+                    self.current_pos_data = self.iter.next();
+                    if self.current_pos_data.is_some() {
+                        // SOT x anything
+                        let mut right_prop = self.get_break_property();
+                        if self.is_break_from_table((PROP_SOT - 1) as u8, right_prop) {
+                            return Some(self.current_pos_data.unwrap().0);
+                        }
+                    }
+                }
+
                 if self.is_eof() {
                     return None;
                 }
@@ -76,8 +88,16 @@ macro_rules! break_iterator_impl {
                     let mut left_prop = self.get_break_property();
                     let left_codepoint = self.current_pos_data;
                     self.current_pos_data = self.iter.next();
+
                     if self.current_pos_data.is_none() {
                         // EOF
+                        if get_break_state_from_table(
+                            &self.break_state_table,
+                            self.rule_property_count,
+                            left_prop,
+                            PROP_EOT as u8,
+                        ) == NOT_MATCH_RULE {
+                        }
                         return Some(self.len);
                     }
                     let right_prop = self.get_break_property();
@@ -89,19 +109,28 @@ macro_rules! break_iterator_impl {
                         left_prop,
                         right_prop,
                     );
+
                     if break_state >= 0 as i8 {
+                        // This isn't simple rule set.
                         let mut previous_iter = self.iter.clone();
                         let mut previous_pos_data = self.current_pos_data;
 
                         loop {
                             self.current_pos_data = self.iter.next();
                             if self.current_pos_data.is_none() {
+                                println!("EOFEOF");
                                 // Reached EOF. But we are analyzing multiple characters now, so next break may be previous point.
-                                //if get_break_state_from_table(&self.break_state_table, self.rule_property_count, break_state as u8, EOT) == PREVIOUS_BREAK_RULE {
-                                //    self.iter = previous_iter;
-                                //    self.current_pos_data = previous_pos_data;
-                                //    return Some(previous_pos_data.unwrap().0);
-                                //}
+                                if get_break_state_from_table(
+                                    &self.break_state_table,
+                                    self.rule_property_count,
+                                    break_state as u8,
+                                    PROP_EOT as u8,
+                                ) == NOT_MATCH_RULE
+                                {
+                                    self.iter = previous_iter;
+                                    self.current_pos_data = previous_pos_data;
+                                    return Some(previous_pos_data.unwrap().0);
+                                }
                                 // EOF
                                 return Some(self.len);
                             }
@@ -123,12 +152,17 @@ macro_rules! break_iterator_impl {
                         if break_state == KEEP_RULE {
                             continue;
                         }
-                        if break_state == PREVIOUS_BREAK_RULE {
+                        if break_state == NOT_MATCH_RULE {
+                            println!("NOT_MATCH_RURLE");
                             self.iter = previous_iter;
                             self.current_pos_data = previous_pos_data;
                             return Some(previous_pos_data.unwrap().0);
                         }
                         return Some(self.current_pos_data.unwrap().0);
+                    }
+
+                    if break_state == NOT_MATCH_RULE {
+                        println!("NOT_MATCH_RURLE2");
                     }
 
                     if self.is_break_from_table(left_prop, right_prop) {
@@ -153,46 +187,39 @@ macro_rules! break_iterator_impl {
     };
 }
 
-/*
-break_iterator_impl!(LineBreakIterator, CharIndices<'a>, char);
+break_iterator_impl!(WordBreakIterator, CharIndices<'a>, char);
 
-impl<'a> LineBreakIterator<'a> {
+impl<'a> WordBreakIterator<'a> {
     /// Create line break iterator
-    pub fn new(input: &str) -> LineBreakIterator {
-        LineBreakIterator {
+    pub fn new(input: &str) -> WordBreakIterator {
+        WordBreakIterator {
             iter: input.char_indices(),
             len: input.len(),
             current_pos_data: None,
             result_cache: Vec::new(),
+            break_state_table: &BREAK_STATE_MACHINE_TABLE,
+            rule_property_count: PROP_COUNT,
         }
     }
 
-    fn get_linebreak_property(&mut self) -> u8 {
-        self.get_linebreak_property_with_rule(self.current_pos_data.unwrap().1)
+    fn get_break_property(&mut self) -> u8 {
+        self.get_break_property_with_rule(self.current_pos_data.unwrap().1)
     }
 
-    fn get_linebreak_property_with_rule(&mut self, c: char) -> u8 {
-        get_linebreak_property_with_rule(c, self.break_rule, self.word_break_rule, self.ja_zh)
-    }
-
-    fn is_break_by_normal(&mut self) -> bool {
-        is_break_utf32_by_normal(self.current_pos_data.unwrap().1 as u32, self.ja_zh)
+    fn get_break_property_with_rule(&mut self, c: char) -> u8 {
+        get_break_property_utf8(c)
     }
 
     #[inline]
-    fn use_complex_breaking(c: char) -> bool {
-        use_complex_breaking_utf32(c as u32)
-    }
-
-    fn get_line_break_by_platform_fallback(&mut self, input: &[u16]) -> Vec<usize> {
-        if let Some(mut ret) = get_line_break_utf16(input) {
-            ret.push(input.len());
-            return ret;
-        }
-        [input.len()].to_vec()
+    fn is_break_from_table(&self, left: u8, right: u8) -> bool {
+        is_break_from_table(
+            &self.break_state_table,
+            self.rule_property_count,
+            left,
+            right,
+        )
     }
 }
-*/
 
 /// Latin-1 version of line break iterator.
 #[derive(Clone)]

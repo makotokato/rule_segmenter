@@ -5,7 +5,7 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
-const WORD_SEGMENTER_JSON: &[u8; 256368] = include_bytes!("data/w.json");
+const WORD_SEGMENTER_JSON: &[u8; 256542] = include_bytes!("data/w.json");
 
 #[derive(Deserialize, Debug)]
 struct SegmenterPropertyValueMap {
@@ -24,7 +24,7 @@ struct SegmenterProperty {
 struct SegmenterState {
     left: Vec<String>,
     right: Vec<String>,
-    break_state: bool,
+    break_state: Option<bool>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -36,7 +36,7 @@ struct SegmenterRuleTable {
 #[allow(dead_code)]
 const BREAK_RULE: i8 = -128;
 const UNKNOWN_RULE: i8 = -127;
-const PREVIOUS_BREAK_RULE: i8 = -2;
+const NOT_MATCH_RULE: i8 = -2;
 const KEEP_RULE: i8 = -1;
 
 fn set_break_state(
@@ -74,6 +74,10 @@ fn main() {
         }
     }
 
+    // sot and eot
+    properties_names.push("sot".to_string());
+    properties_names.push("eot".to_string());
+
     println!("property length={}", properties_names.len());
     let rule_size = properties_names.len() * properties_names.len();
     let mut break_state_table = Vec::<i8>::with_capacity(rule_size);
@@ -82,11 +86,16 @@ fn main() {
     }
 
     for rule in word_segmenter.rules {
-        let break_state = if rule.break_state {
-            BREAK_RULE
+        let break_state;
+        if rule.break_state.is_some() {
+            break_state = if rule.break_state.unwrap() {
+                BREAK_RULE
+            } else {
+                KEEP_RULE
+            };
         } else {
-            KEEP_RULE
-        };
+            break_state = NOT_MATCH_RULE;
+        }
 
         for l in &rule.left {
             if l == "Any" {
@@ -115,11 +124,15 @@ fn main() {
                 continue;
             }
             let left_index = properties_names.iter().position(|n| n.eq(l)).unwrap();
-            println!("left={} {}", l, left_index);
+            println!("left={} {}", l, left_index+1);
             for r in &rule.right {
                 // Special case: right is Any
                 if r == "Any" {
                     for i in 0..properties_names.len() {
+                        if break_state == NOT_MATCH_RULE && i == properties_names.len() - 1 {
+                            println!("NOT_MATCH {} {}", l, r);
+                            break_state_table[left_index * properties_names.len() + i] = UNKNOWN_RULE;
+                        }
                         set_break_state(
                             &mut break_state_table,
                             properties_names.len(),
@@ -131,7 +144,7 @@ fn main() {
                     continue;
                 }
                 let right_index = properties_names.iter().position(|n| n.eq(r)).unwrap();
-                println!("right={} {}", r, right_index);
+                println!("right={} {}", r, right_index +1);
                 set_break_state(
                     &mut break_state_table,
                     properties_names.len(),
@@ -149,11 +162,11 @@ fn main() {
     for p in &word_segmenter.tables {
         if let Some(left) = p.value.left.clone() {
             if let Some(right) = p.value.right.clone() {
-                println!("{} {}", left, right);
                 let left_index = properties_names.iter().position(|n| n.eq(&left)).unwrap();
                 let right_index = properties_names.iter().position(|n| n.eq(&right)).unwrap();
-                let index = properties_names.iter().position(|n| n.eq(&p.name)).unwrap();
-                 break_state_table[left_index * property_length + right_index] = index as i8;
+                let index = properties_names.iter().position(|n| n.eq(&p.name)).unwrap() + 1;
+                println!("left={}({}) right={}({}) = {}", left, left_index, right, right_index, index);
+                break_state_table[left_index * property_length + right_index] = index as i8;
             }
         }
     }
@@ -227,6 +240,17 @@ fn main() {
         properties_names.len()
     );
 
+    writeln!(
+        out,
+        "pub const PROP_SOT: usize = {};",
+        properties_names.len() - 1
+    );
+    writeln!(
+        out,
+        "pub const PROP_EOT: usize = {};",
+        properties_names.len()
+    );
+
     let mut i = 1;
     writeln!(out, "// (Unmapped) = 0");
     for p in properties_names.iter() {
@@ -237,6 +261,6 @@ fn main() {
     writeln!(out, "");
     writeln!(out, "#[allow(dead_code)]");
     writeln!(out, "pub const BREAK_RULE: i8 = -128;");
-    writeln!(out, "pub const PREVIOUS_BREAK_RULE: i8 = -2;");
+    writeln!(out, "pub const NOT_MATCH_RULE: i8 = -2;");
     writeln!(out, "pub const KEEP_RULE: i8 = -1;");
 }

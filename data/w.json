@@ -75,6 +75,7 @@
 { "left": ["WSegSpace"], "right": ["WSegSpace"], "break_state": false },
 { "left": ["ALetter", "Hebrew_Letter"], "right": ["ALetter", "Hebrew_Letter"], "break_state": false },
 { "left": [ "ALetter_MidLetter", "ALetter_MidNumLet", "ALetter_Single_Quote", "Hebrew_Letter_MidLetter", "Hebrew_Letter_MidNumLet", "Hebrew_Letter_Single_Quote"], "right": ["ALetter", "Hebrew_Letter"], "break_state": false },
+{ "left": [ "ALetter_MidLetter"], "right": ["Any"] },
 { "left": [ "Hebrew_Letter"], "right": ["Single_Quote"], "break_state": false },
 { "left": [ "Hebrew_Letter_Double_Quote"], "right": ["Hebrew_Letter"], "break_state": false },
 { "left": ["Numeric"], "right": ["Numeric"], "break_state": false },
