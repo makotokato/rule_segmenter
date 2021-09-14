@@ -380,6 +380,7 @@ print("{ \"name\": \"MidNumLet\", \"value\": { \"left\": \"MidNumLet\", \"right\
 print("{ \"name\": \"WSegSpace\", \"value\": { \"left\": \"WSegSpace\", \"right\": \"Extend\" }},")
 print("{ \"name\": \"WSegSpace\", \"value\": { \"left\": \"WSegSpace\", \"right\": \"Format\" }},")
 print("{ \"name\": \"WSegSpace\", \"value\": { \"left\": \"WSegSpace\", \"right\": \"ZWJ\" }},")
+print("{ \"name\": \"Unknown\", \"value\": { \"left\": \"Unknown\", \"right\": \"Extend\" }},")
 # (WB7)
 print("{ \"name\": \"ALetter_MidLetter\", \"value\": { \"left\": \"ALetter\", \"right\": \"MidLetter\" }},")
 print("{ \"name\": \"ALetter_MidNumLet\", \"value\": { \"left\": \"ALetter\", \"right\": \"MidNumLet\" }},")

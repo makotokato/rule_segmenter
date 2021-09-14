@@ -24,11 +24,7 @@ fn get_break_property_utf8(codepoint: char) -> u8 {
 
 #[inline]
 fn is_break_from_table(rule_table: &[i8], property_count: usize, left: u8, right: u8) -> bool {
-    if left == 0 || right == 0 {
-        // not mapped
-        return true;
-    }
-    let rule = rule_table[((left as usize) - 1) * property_count + (right as usize) - 1];
+    let rule = rule_table[((left as usize)) * property_count + (right as usize)];
     if rule == KEEP_RULE {
         return false;
     }
@@ -41,16 +37,12 @@ fn is_break_from_table(rule_table: &[i8], property_count: usize, left: u8, right
 
 #[inline]
 fn get_break_state_from_table(rule_table: &[i8], property_count: usize, left: u8, right: u8) -> i8 {
-    if left == 0 || right == 0 {
-        // not mapped
-        return BREAK_RULE;
-    }
     println!("left={} right={}", left, right);
     println!(
         "break={}",
-        rule_table[((left as usize) - 1) * property_count + (right as usize) - 1]
+        rule_table[((left as usize)) * property_count + (right as usize)]
     );
-    rule_table[((left as usize) - 1) * property_count + (right as usize - 1)]
+    rule_table[((left as usize)) * property_count + (right as usize)]
 }
 
 macro_rules! break_iterator_impl {
@@ -73,7 +65,7 @@ macro_rules! break_iterator_impl {
                     self.current_pos_data = self.iter.next();
                     if self.current_pos_data.is_some() {
                         // SOT x anything
-                        let mut right_prop = self.get_break_property();
+                        let right_prop = self.get_break_property();
                         if self.is_break_from_table(PROP_SOT as u8, right_prop) {
                             return Some(self.current_pos_data.unwrap().0);
                         }
@@ -85,8 +77,8 @@ macro_rules! break_iterator_impl {
                 }
 
                 loop {
-                    let mut left_prop = self.get_break_property();
-                    let left_codepoint = self.current_pos_data;
+                    let left_prop = self.get_break_property();
+                    //let left_codepoint = self.current_pos_data;
                     self.current_pos_data = self.iter.next();
 
                     if self.current_pos_data.is_none() {
@@ -118,7 +110,6 @@ macro_rules! break_iterator_impl {
                         loop {
                             self.current_pos_data = self.iter.next();
                             if self.current_pos_data.is_none() {
-                                //println!("EOFEOF");
                                 // Reached EOF. But we are analyzing multiple characters now, so next break may be previous point.
                                 if get_break_state_from_table(
                                     &self.break_state_table,
@@ -153,7 +144,6 @@ macro_rules! break_iterator_impl {
                             continue;
                         }
                         if break_state == NOT_MATCH_RULE {
-                            //println!("NOT_MATCH_RULE={}", previous_pos_data.unwrap().0);
                             self.iter = previous_iter;
                             self.current_pos_data = previous_pos_data;
                             return Some(previous_pos_data.unwrap().0);
@@ -162,7 +152,7 @@ macro_rules! break_iterator_impl {
                     }
 
                     if break_state == NOT_MATCH_RULE {
-                        //println!("NOT_MATCH_RURLE2");
+                        // TODO
                     }
 
                     if self.is_break_from_table(left_prop, right_prop) {

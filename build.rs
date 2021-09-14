@@ -5,7 +5,7 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
-const WORD_SEGMENTER_JSON: &[u8; 258865] = include_bytes!("data/w.json");
+const WORD_SEGMENTER_JSON: &[u8; 258938] = include_bytes!("data/w.json");
 
 #[derive(Deserialize, Debug)]
 struct SegmenterPropertyValueMap {
@@ -57,26 +57,28 @@ fn get_index_from_name(properties_names: &Vec<String>, s: &str) -> usize {
 }
 
 fn main() {
-    let mut properties_map: [u8; 0x10000] = [0; 0x10000];
+    let mut properties_map: [u8; 0x20000] = [0; 0x20000];
     let mut properties_names = Vec::<String>::new();
     let mut simple_properties_count = 0;
 
     let word_segmenter: SegmenterRuleTable =
         serde_json::from_slice(WORD_SEGMENTER_JSON).expect("JSON syntax error");
 
+    properties_names.push("Unknown".to_string());
+
     for p in &word_segmenter.tables {
-        if !properties_names.contains(&p.name) && p.name != "Unknown" {
+        if !properties_names.contains(&p.name) {
             properties_names.push(p.name.clone());
         }
 
         if let Some(codepoint) = p.value.codepoint.clone() {
             simple_properties_count += 1;
             for c in codepoint {
-                if c >= 0x10000 {
+                if c >= 0x20000 {
                     break;
                 }
-                println!("{} = {}", c, properties_names.len());
-                properties_map[c as usize] = properties_names.len() as u8;
+                //println!("{} = {}", c, properties_names.len());
+                properties_map[c as usize] = (properties_names.len() - 1) as u8;
             }
             continue;
         }
@@ -134,7 +136,7 @@ fn main() {
                 continue;
             }
             let left_index = get_index_from_name(&properties_names, l);
-            println!("left={} {}", l, left_index + 1);
+            println!("left={} {}", l, left_index);
             for r in &rule.right {
                 // Special case: right is Any
                 if r == "Any" {
@@ -155,7 +157,7 @@ fn main() {
                     continue;
                 }
                 let right_index = get_index_from_name(&properties_names, r);
-                println!("right={} {}", r, right_index + 1);
+                println!("right={} {}", r, right_index);
                 if r != "eot"
                     && break_state_table[left_index * properties_names.len() + right_index]
                         == NOT_MATCH_RULE
@@ -196,7 +198,7 @@ fn main() {
                 let right_index = get_index_from_name(&properties_names, &right);
                 let left_index = get_index_from_name(&properties_names, &left);
 
-                let index = properties_names.iter().position(|n| n.eq(&p.name)).unwrap() + 1;
+                let index = properties_names.iter().position(|n| n.eq(&p.name)).unwrap();
                 println!(
                     "left={}({}) right={}({}) = {}",
                     left, left_index, right, right_index, index
@@ -230,7 +232,7 @@ fn main() {
 
         if i > 1 && (i % 1024) == 0 {
             writeln!(out, "];");
-            if i >= 0x10000 {
+            if i >= 0x20000 {
                 break;
             }
             page += 1;
@@ -239,15 +241,10 @@ fn main() {
         }
     }
 
-    writeln!(out, "pub const PROPERTY_TABLE: [&[u8; 1024]; 8] = [");
-    writeln!(out, "    &BREAK_PROPERTIES_0,");
-    writeln!(out, "    &BREAK_PROPERTIES_1,");
-    writeln!(out, "    &BREAK_PROPERTIES_2,");
-    writeln!(out, "    &BREAK_PROPERTIES_3,");
-    writeln!(out, "    &BREAK_PROPERTIES_4,");
-    writeln!(out, "    &BREAK_PROPERTIES_5,");
-    writeln!(out, "    &BREAK_PROPERTIES_6,");
-    writeln!(out, "    &BREAK_PROPERTIES_7,");
+    writeln!(out, "pub const PROPERTY_TABLE: [&[u8; 1024]; 128] = [");
+    for i in 0..128 {
+        writeln!(out, "    &BREAK_PROPERTIES_{},", i);
+    }
     writeln!(out, "];");
 
     writeln!(
@@ -278,16 +275,15 @@ fn main() {
     writeln!(
         out,
         "pub const PROP_SOT: usize = {};",
-        properties_names.len() - 1
+        properties_names.len() - 2
     );
     writeln!(
         out,
         "pub const PROP_EOT: usize = {};",
-        properties_names.len()
+        properties_names.len() - 1
     );
 
-    let mut i = 1;
-    writeln!(out, "// (Unmapped) = 0");
+    let mut i = 0;
     for p in properties_names.iter() {
         writeln!(out, "// {} = {}", p, i);
         i += 1;

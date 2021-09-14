@@ -12,10 +12,6 @@ fn run_word_break_test() {
     let failed = [
         "\u{0001}\u{00AD}",
         "\u{00AD}\u{00AD}",
-        "\u{0061}\u{003A}\u{0001}",
-        "\u{0061}\u{0027}\u{0001}",
-        "\u{0031}\u{0027}\u{0001}",
-        "\u{0031}\u{002C}\u{0001}",
     ];
 
     let f = File::open("tests/WordBreakTest.txt");
@@ -79,14 +75,15 @@ fn run_word_break_test() {
         let mut iter = WordBreakIterator::new(&s);
         if failed.contains(&&s.as_str()) {
             println!("Skip: {}", line);
-            //assert_ne!(iter.next(), Some(char_break[0]), "{}", line);
+            let result: Vec<usize> = iter.map(|x| x).collect();
+            assert_ne!(result, char_break, "{}", line);
             continue;
         }
 
         {
-            //println!("UTF8: {}", line);
-            //let result: Vec<usize> = iter.map(|x| x).collect();
-            // assert_eq!(result, char_break, "{}", line);
+            println!("UTF8: {}", line);
+            let result: Vec<usize> = iter.map(|x| x).collect();
+            //assert_eq!(result, char_break, "{}", line);
         }
 
         {

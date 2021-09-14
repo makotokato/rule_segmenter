@@ -83,6 +83,7 @@
 { "name": "WSegSpace", "value": { "left": "WSegSpace", "right": "Extend" }},
 { "name": "WSegSpace", "value": { "left": "WSegSpace", "right": "Format" }},
 { "name": "WSegSpace", "value": { "left": "WSegSpace", "right": "ZWJ" }},
+{ "name": "Unknown", "value": { "left": "Unknown", "right": "Extend" }},
 { "name": "ALetter_MidLetter", "value": { "left": "ALetter", "right": "MidLetter" }},
 { "name": "ALetter_MidNumLet", "value": { "left": "ALetter", "right": "MidNumLet" }},
 { "name": "ALetter_Single_Quote", "value": { "left": "ALetter", "right": "Single_Quote" }},
