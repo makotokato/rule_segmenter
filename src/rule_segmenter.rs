@@ -96,8 +96,8 @@ macro_rules! break_iterator_impl {
                             self.rule_property_count,
                             left_prop,
                             PROP_EOT as u8,
-                        ) == NOT_MATCH_RULE {
-                        }
+                        ) == NOT_MATCH_RULE
+                        {}
                         return Some(self.len);
                     }
                     let right_prop = self.get_break_property();
@@ -118,7 +118,7 @@ macro_rules! break_iterator_impl {
                         loop {
                             self.current_pos_data = self.iter.next();
                             if self.current_pos_data.is_none() {
-                                println!("EOFEOF");
+                                //println!("EOFEOF");
                                 // Reached EOF. But we are analyzing multiple characters now, so next break may be previous point.
                                 if get_break_state_from_table(
                                     &self.break_state_table,
@@ -153,7 +153,7 @@ macro_rules! break_iterator_impl {
                             continue;
                         }
                         if break_state == NOT_MATCH_RULE {
-                            println!("NOT_MATCH_RULE={}", previous_pos_data.unwrap().0);
+                            //println!("NOT_MATCH_RULE={}", previous_pos_data.unwrap().0);
                             self.iter = previous_iter;
                             self.current_pos_data = previous_pos_data;
                             return Some(previous_pos_data.unwrap().0);
@@ -162,7 +162,7 @@ macro_rules! break_iterator_impl {
                     }
 
                     if break_state == NOT_MATCH_RULE {
-                        println!("NOT_MATCH_RURLE2");
+                        //println!("NOT_MATCH_RURLE2");
                     }
 
                     if self.is_break_from_table(left_prop, right_prop) {

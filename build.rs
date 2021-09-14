@@ -5,7 +5,7 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
-const WORD_SEGMENTER_JSON: &[u8; 256661] = include_bytes!("data/w.json");
+const WORD_SEGMENTER_JSON: &[u8; 257725] = include_bytes!("data/w.json");
 
 #[derive(Deserialize, Debug)]
 struct SegmenterPropertyValueMap {
@@ -55,14 +55,18 @@ fn set_break_state(
 fn main() {
     let mut properties_map: [u8; 0x10000] = [0; 0x10000];
     let mut properties_names = Vec::<String>::new();
+    let mut simple_properties_count = 0;
 
     let word_segmenter: SegmenterRuleTable =
         serde_json::from_slice(WORD_SEGMENTER_JSON).expect("JSON syntax error");
 
     for p in &word_segmenter.tables {
-        properties_names.push(p.name.clone());
+        if !properties_names.contains(&p.name) {
+            properties_names.push(p.name.clone());
+        }
 
         if let Some(codepoint) = p.value.codepoint.clone() {
+            simple_properties_count += 1;
             for c in codepoint {
                 if c >= 0x10000 {
                     break;
@@ -73,6 +77,8 @@ fn main() {
             continue;
         }
     }
+
+    println!("Simple count={}", simple_properties_count);
 
     // sot and eot
     properties_names.push("sot".to_string());
@@ -124,14 +130,15 @@ fn main() {
                 continue;
             }
             let left_index = properties_names.iter().position(|n| n.eq(l)).unwrap();
-            println!("left={} {}", l, left_index+1);
+            println!("left={} {}", l, left_index + 1);
             for r in &rule.right {
                 // Special case: right is Any
                 if r == "Any" {
                     for i in 0..properties_names.len() {
                         if break_state == NOT_MATCH_RULE && i == properties_names.len() - 1 {
                             println!("NOT_MATCH {} {}", l, r);
-                            break_state_table[left_index * properties_names.len() + i] = UNKNOWN_RULE;
+                            break_state_table[left_index * properties_names.len() + i] =
+                                UNKNOWN_RULE;
                         }
                         set_break_state(
                             &mut break_state_table,
@@ -144,7 +151,14 @@ fn main() {
                     continue;
                 }
                 let right_index = properties_names.iter().position(|n| n.eq(r)).unwrap();
-                println!("right={} {}", r, right_index +1);
+                println!("right={} {}", r, right_index + 1);
+                if r != "eot"
+                    && break_state_table[left_index * properties_names.len() + right_index]
+                        == NOT_MATCH_RULE
+                {
+                    break_state_table[left_index * properties_names.len() + right_index] =
+                        UNKNOWN_RULE;
+                }
                 set_break_state(
                     &mut break_state_table,
                     properties_names.len(),
@@ -154,13 +168,16 @@ fn main() {
                 );
                 // Fill not match
                 for i in 0..properties_names.len() {
-                    set_break_state(
-                        &mut break_state_table,
-                        properties_names.len(),
-                        left_index,
-                        i,
-                        NOT_MATCH_RULE,
-                    );
+                    if left_index >= simple_properties_count {
+                        println!("NOT_MATCH: left={} right={}", l, i);
+                        set_break_state(
+                            &mut break_state_table,
+                            properties_names.len(),
+                            left_index,
+                            i,
+                            NOT_MATCH_RULE,
+                        );
+                    }
                 }
             }
         }
@@ -172,10 +189,13 @@ fn main() {
     for p in &word_segmenter.tables {
         if let Some(left) = p.value.left.clone() {
             if let Some(right) = p.value.right.clone() {
-                let left_index = properties_names.iter().position(|n| n.eq(&left)).unwrap();
                 let right_index = properties_names.iter().position(|n| n.eq(&right)).unwrap();
+                let left_index = properties_names.iter().position(|n| n.eq(&left)).unwrap();
                 let index = properties_names.iter().position(|n| n.eq(&p.name)).unwrap() + 1;
-                println!("left={}({}) right={}({}) = {}", left, left_index, right, right_index, index);
+                println!(
+                    "left={}({}) right={}({}) = {}",
+                    left, left_index, right, right_index, index
+                );
                 break_state_table[left_index * property_length + right_index] = index as i8;
             }
         }
