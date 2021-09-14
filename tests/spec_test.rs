@@ -11,15 +11,11 @@ fn run_word_break_test() {
     // no failed tests
     let failed = [
         "\u{0001}\u{00AD}",
-        "\u{002C}\u{00AD}",
-        "\u{0020}\u{00AD}",
         "\u{00AD}\u{00AD}",
         "\u{0061}\u{003A}\u{0001}",
         "\u{0061}\u{0027}\u{0001}",
-        "\u{0061}\u{002C}\u{00AD}",
         "\u{0031}\u{0027}\u{0001}",
         "\u{0031}\u{002C}\u{0001}",
-        "\u{0031}\u{002C}\u{00AD}",
     ];
 
     let f = File::open("tests/WordBreakTest.txt");

@@ -74,7 +74,7 @@ macro_rules! break_iterator_impl {
                     if self.current_pos_data.is_some() {
                         // SOT x anything
                         let mut right_prop = self.get_break_property();
-                        if self.is_break_from_table((PROP_SOT - 1) as u8, right_prop) {
+                        if self.is_break_from_table(PROP_SOT as u8, right_prop) {
                             return Some(self.current_pos_data.unwrap().0);
                         }
                     }

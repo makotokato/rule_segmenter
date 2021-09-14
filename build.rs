@@ -5,7 +5,7 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
-const WORD_SEGMENTER_JSON: &[u8; 258427] = include_bytes!("data/w.json");
+const WORD_SEGMENTER_JSON: &[u8; 258865] = include_bytes!("data/w.json");
 
 #[derive(Deserialize, Debug)]
 struct SegmenterPropertyValueMap {
@@ -52,6 +52,10 @@ fn set_break_state(
     }
 }
 
+fn get_index_from_name(properties_names: &Vec<String>, s: &str) -> usize {
+    properties_names.iter().position(|n| n.eq(s)).unwrap()
+}
+
 fn main() {
     let mut properties_map: [u8; 0x10000] = [0; 0x10000];
     let mut properties_names = Vec::<String>::new();
@@ -61,7 +65,7 @@ fn main() {
         serde_json::from_slice(WORD_SEGMENTER_JSON).expect("JSON syntax error");
 
     for p in &word_segmenter.tables {
-        if !properties_names.contains(&p.name) {
+        if !properties_names.contains(&p.name) && p.name != "Unknown" {
             properties_names.push(p.name.clone());
         }
 
@@ -115,7 +119,7 @@ fn main() {
                             }
                         }
                     } else {
-                        let right_index = properties_names.iter().position(|n| n.eq(r)).unwrap();
+                        let right_index = get_index_from_name(&properties_names, r);
                         for i in 0..properties_names.len() {
                             set_break_state(
                                 &mut break_state_table,
@@ -129,7 +133,7 @@ fn main() {
                 }
                 continue;
             }
-            let left_index = properties_names.iter().position(|n| n.eq(l)).unwrap();
+            let left_index = get_index_from_name(&properties_names, l);
             println!("left={} {}", l, left_index + 1);
             for r in &rule.right {
                 // Special case: right is Any
@@ -150,7 +154,7 @@ fn main() {
                     }
                     continue;
                 }
-                let right_index = properties_names.iter().position(|n| n.eq(r)).unwrap();
+                let right_index = get_index_from_name(&properties_names, r);
                 println!("right={} {}", r, right_index + 1);
                 if r != "eot"
                     && break_state_table[left_index * properties_names.len() + right_index]
@@ -189,8 +193,9 @@ fn main() {
     for p in &word_segmenter.tables {
         if let Some(left) = p.value.left.clone() {
             if let Some(right) = p.value.right.clone() {
-                let right_index = properties_names.iter().position(|n| n.eq(&right)).unwrap();
-                let left_index = properties_names.iter().position(|n| n.eq(&left)).unwrap();
+                let right_index = get_index_from_name(&properties_names, &right);
+                let left_index = get_index_from_name(&properties_names, &left);
+
                 let index = properties_names.iter().position(|n| n.eq(&p.name)).unwrap() + 1;
                 println!(
                     "left={}({}) right={}({}) = {}",
