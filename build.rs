@@ -3,7 +3,6 @@ use std::env;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
-use std::path::PathBuf;
 
 const WORD_SEGMENTER_JSON: &[u8; 258938] = include_bytes!("data/w.json");
 
@@ -221,77 +220,77 @@ fn main() {
 
     let mut page = 0;
 
-    writeln!(out, "pub const BREAK_PROPERTIES_{}: [u8; 1024] = [", page);
+    writeln!(out, "pub const BREAK_PROPERTIES_{}: [u8; 1024] = [", page).ok();
     for c in properties_map.iter() {
-        write!(out, "{: >2},", c);
+        write!(out, "{: >2},", c).ok();
         i += 1;
 
         if (i % 16) == 0 {
-            writeln!(out, "");
+            writeln!(out, "").ok();
         }
 
         if i > 1 && (i % 1024) == 0 {
-            writeln!(out, "];");
+            writeln!(out, "];").ok();
             if i >= 0x20000 {
                 break;
             }
             page += 1;
-            writeln!(out, "pub const BREAK_PROPERTIES_{}: [u8; 1024] = [", page);
+            writeln!(out, "pub const BREAK_PROPERTIES_{}: [u8; 1024] = [", page).ok();
             continue;
         }
     }
 
-    writeln!(out, "pub const PROPERTY_TABLE: [&[u8; 1024]; 128] = [");
+    writeln!(out, "pub const PROPERTY_TABLE: [&[u8; 1024]; 128] = [").ok();
     for i in 0..128 {
-        writeln!(out, "    &BREAK_PROPERTIES_{},", i);
+        writeln!(out, "    &BREAK_PROPERTIES_{},", i).ok();
     }
-    writeln!(out, "];");
+    writeln!(out, "];").ok();
 
     writeln!(
         out,
         "pub const BREAK_STATE_MACHINE_TABLE: [i8; {}] = [",
         rule_size
-    );
+    ).ok();
     let mut i = 1;
-    writeln!(out, "// {}", properties_names[i - 1]);
+    writeln!(out, "// {}", properties_names[i - 1]).ok();
     for c in break_state_table.iter() {
-        write!(out, "{: >4},", c);
+        write!(out, "{: >4},", c).ok();
         i += 1;
         if ((i - 1) % properties_names.len()) == 0 {
-            writeln!(out, "");
+            writeln!(out, "").ok();
             if (i / properties_names.len()) < properties_names.len() {
-                writeln!(out, "// {}", properties_names[i / properties_names.len()]);
+                writeln!(out, "// {}", properties_names[i / properties_names.len()]).ok();
             }
         }
     }
-    writeln!(out, "];");
+    writeln!(out, "];").ok();
 
     writeln!(
         out,
         "pub const PROP_COUNT: usize = {};",
         properties_names.len()
-    );
+    ).ok();
 
     writeln!(
         out,
         "pub const PROP_SOT: usize = {};",
         properties_names.len() - 2
-    );
+    ).ok();
     writeln!(
         out,
         "pub const PROP_EOT: usize = {};",
         properties_names.len() - 1
-    );
+    ).ok();
 
     let mut i = 0;
     for p in properties_names.iter() {
-        writeln!(out, "// {} = {}", p, i);
+        writeln!(out, "// {} = {}", p, i).ok();
         i += 1;
     }
 
-    writeln!(out, "");
-    writeln!(out, "#[allow(dead_code)]");
-    writeln!(out, "pub const BREAK_RULE: i8 = -128;");
-    writeln!(out, "pub const NOT_MATCH_RULE: i8 = -2;");
-    writeln!(out, "pub const KEEP_RULE: i8 = -1;");
+    writeln!(out, "").ok();
+    writeln!(out, "#[allow(dead_code)]").ok();
+    writeln!(out, "pub const BREAK_RULE: i8 = -128;").ok();
+    writeln!(out, "pub const NOT_MATCH_RULE: i8 = -2;").ok();
+    writeln!(out, "pub const KEEP_RULE: i8 = -1;").ok();
 }
