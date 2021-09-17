@@ -106,6 +106,7 @@ macro_rules! break_iterator_impl {
                         // This isn't simple rule set.
                         let mut previous_iter = self.iter.clone();
                         let mut previous_pos_data = self.current_pos_data;
+                        println!("COMPLEX {}", self.current_pos_data.unwrap().0);
 
                         loop {
                             self.current_pos_data = self.iter.next();
@@ -137,8 +138,8 @@ macro_rules! break_iterator_impl {
                                 break;
                             }
 
-                            previous_iter = self.iter.clone();
-                            previous_pos_data = self.current_pos_data;
+                            //previous_iter = self.iter.clone();
+                            //previous_pos_data = self.current_pos_data;
                         }
                         if break_state == KEEP_RULE {
                             continue;
@@ -146,6 +147,7 @@ macro_rules! break_iterator_impl {
                         if break_state == NOT_MATCH_RULE {
                             self.iter = previous_iter;
                             self.current_pos_data = previous_pos_data;
+                            println!("NOT_MATCH {}", previous_pos_data.unwrap().0);
                             return Some(previous_pos_data.unwrap().0);
                         }
                         return Some(self.current_pos_data.unwrap().0);

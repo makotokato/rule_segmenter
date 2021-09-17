@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
-const WORD_SEGMENTER_JSON: &[u8; 258938] = include_bytes!("data/w.json");
+const WORD_SEGMENTER_JSON: &[u8; 263214] = include_bytes!("data/w.json");
 
 #[derive(Deserialize, Debug)]
 struct SegmenterPropertyValueMap {
@@ -64,6 +64,7 @@ fn main() {
         serde_json::from_slice(WORD_SEGMENTER_JSON).expect("JSON syntax error");
 
     properties_names.push("Unknown".to_string());
+    simple_properties_count += 1;
 
     for p in &word_segmenter.tables {
         if !properties_names.contains(&p.name) {
@@ -84,6 +85,7 @@ fn main() {
     }
 
     println!("Simple count={}", simple_properties_count);
+    let all_properties_count = properties_names.len();
 
     // sot and eot
     properties_names.push("sot".to_string());
@@ -115,13 +117,14 @@ fn main() {
                     if r == "Any" {
                         // Fill all unknown state.
                         for i in 0..rule_size {
+                        //for i in 0..(simple_properties_count * simple_properties_count) {
                             if break_state_table[i] == UNKNOWN_RULE {
                                 break_state_table[i] = break_state;
                             }
                         }
                     } else {
                         let right_index = get_index_from_name(&properties_names, r);
-                        for i in 0..properties_names.len() {
+                        for i in 0..simple_properties_count {
                             set_break_state(
                                 &mut break_state_table,
                                 properties_names.len(),
@@ -141,7 +144,7 @@ fn main() {
                 if r == "Any" {
                     for i in 0..properties_names.len() {
                         if break_state == NOT_MATCH_RULE && i == properties_names.len() - 1 {
-                            println!("NOT_MATCH {} {}", l, r);
+                            println!("NOT_MATCH {} {} -> UNKNOWN", l, r);
                             break_state_table[left_index * properties_names.len() + i] =
                                 UNKNOWN_RULE;
                         }

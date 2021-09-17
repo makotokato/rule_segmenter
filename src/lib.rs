@@ -13,8 +13,7 @@ mod tests {
         let s = "\u{0001}\u{00ad}";
         let mut iter = WordBreakIterator::new(&s);
         assert_eq!(Some(0), iter.next());
-        assert_eq!(Some(1), iter.next());
-        //assert_eq!(Some(2), iter.next());
+        assert_eq!(Some(3), iter.next());
 
         let input: [u8; 3] = [0x5F, 0x31, 0x3A];
         let mut iter = WordBreakIteratorLatin1::new(&input);
