@@ -116,7 +116,7 @@ fn main() {
                     if r == "Any" {
                         // Fill all unknown state.
                         for i in 0..rule_size {
-                        //for i in 0..(simple_properties_count * simple_properties_count) {
+                            //for i in 0..(simple_properties_count * simple_properties_count) {
                             if break_state_table[i] == UNKNOWN_RULE {
                                 break_state_table[i] = break_state;
                             }
@@ -252,7 +252,8 @@ fn main() {
         out,
         "pub const BREAK_STATE_MACHINE_TABLE: [i8; {}] = [",
         rule_size
-    ).ok();
+    )
+    .ok();
     let mut i = 1;
     writeln!(out, "// {}", properties_names[i - 1]).ok();
     for c in break_state_table.iter() {
@@ -271,18 +272,27 @@ fn main() {
         out,
         "pub const PROP_COUNT: usize = {};",
         properties_names.len()
-    ).ok();
+    )
+    .ok();
+    writeln!(
+        out,
+        "pub const CODEPOINT_LAST_PROPERTY: i8 = {};",
+        simple_properties_count - 1
+    )
+    .ok();
 
     writeln!(
         out,
         "pub const PROP_SOT: usize = {};",
         properties_names.len() - 2
-    ).ok();
+    )
+    .ok();
     writeln!(
         out,
         "pub const PROP_EOT: usize = {};",
         properties_names.len() - 1
-    ).ok();
+    )
+    .ok();
 
     let mut i = 0;
     for p in properties_names.iter() {

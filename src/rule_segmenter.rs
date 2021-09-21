@@ -24,7 +24,7 @@ fn get_break_property_utf8(codepoint: char) -> u8 {
 
 #[inline]
 fn is_break_from_table(rule_table: &[i8], property_count: usize, left: u8, right: u8) -> bool {
-    let rule = rule_table[((left as usize)) * property_count + (right as usize)];
+    let rule = rule_table[(left as usize) * property_count + (right as usize)];
     if rule == KEEP_RULE {
         return false;
     }
@@ -40,9 +40,9 @@ fn get_break_state_from_table(rule_table: &[i8], property_count: usize, left: u8
     println!("left={} right={}", left, right);
     println!(
         "break={}",
-        rule_table[((left as usize)) * property_count + (right as usize)]
+        rule_table[(left as usize) * property_count + (right as usize)]
     );
-    rule_table[((left as usize)) * property_count + (right as usize)]
+    rule_table[(left as usize) * property_count + (right as usize)]
 }
 
 macro_rules! break_iterator_impl {
@@ -103,7 +103,7 @@ macro_rules! break_iterator_impl {
                     );
 
                     if break_state >= 0 as i8 {
-                        // This isn't simple rule set.
+                        // This isn't simple rule set. We need marker to restore iterator to previous position.
                         let mut previous_iter = self.iter.clone();
                         let mut previous_pos_data = self.current_pos_data;
                         println!("COMPLEX {}", self.current_pos_data.unwrap().0);
@@ -127,6 +127,7 @@ macro_rules! break_iterator_impl {
                                 return Some(self.len);
                             }
 
+                            let previous_break_state = break_state;
                             let prop = self.get_break_property();
                             break_state = get_break_state_from_table(
                                 &self.break_state_table,
@@ -137,9 +138,13 @@ macro_rules! break_iterator_impl {
                             if break_state < 0 {
                                 break;
                             }
-
-                            //previous_iter = self.iter.clone();
-                            //previous_pos_data = self.current_pos_data;
+                            if previous_break_state >= 0
+                                && previous_break_state <= CODEPOINT_LAST_PROPERTY
+                            {
+                                // Move marker
+                                previous_iter = self.iter.clone();
+                                previous_pos_data = self.current_pos_data;
+                            }
                         }
                         if break_state == KEEP_RULE {
                             continue;
