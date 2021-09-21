@@ -75,9 +75,8 @@ fn main() {
             simple_properties_count += 1;
             for c in codepoint {
                 if c >= 0x20000 {
-                    break;
+                    continue;
                 }
-                //println!("{} = {}", c, properties_names.len());
                 properties_map[c as usize] = (properties_names.len() - 1) as u8;
             }
             continue;

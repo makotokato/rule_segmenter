@@ -28,10 +28,6 @@ fn run_word_break_test() {
         "\u{0061}\u{2060}\u{0027}",
         "\u{0061}\u{2060}\u{0308}\u{0027}",
         "\u{0061}\u{1F1E6}\u{1F1E7}\u{200D}\u{1F1E8}\u{0062}",
-        "\u{1F476}\u{1F3FF}\u{1F476}",
-        "\u{1F476}\u{1F3FF}\u{0308}\u{200D}\u{1F476}\u{1F3FF}",
-        "\u{1F6D1}\u{1F3FF}",
-        "\u{200D}\u{1F6D1}\u{1F3FF}",
     ];
 
     let f = File::open("tests/WordBreakTest.txt");
