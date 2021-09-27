@@ -1,4 +1,4 @@
-use rule_segmenter::SentenceBreakIteratorLatin1;
+use rule_segmenter::{SentenceBreakIterator, SentenceBreakIteratorLatin1};
 use std::char;
 use std::fs::File;
 use std::io::prelude::*;
@@ -9,13 +9,9 @@ use std::u32;
 fn run_sentence_break_test() {
     // no failed tests
     let failed = [
-	"\u{002e}\u{0001}",
-	"\u{002e}\u{0009}",
 	"\u{002e}\u{0022}",
 	"\u{002e}\u{0030}",
         "\u{002e}\u{0041}",
-        "\u{0021}\u{0001}",
-        "\u{0021}\u{0009}",
         "\u{0021}\u{0061}",
         "\u{0021}\u{0022}",
         "\u{0021}\u{0041}",
@@ -82,11 +78,11 @@ fn run_sentence_break_test() {
             count = count + 1
         }
         let s: String = char_vec.into_iter().collect();
-        //let mut iter = SentenceBreakIterator::new(&s);
+        let mut iter = SentenceBreakIterator::new(&s);
         if failed.contains(&&s.as_str()) {
             println!("Skip: {}", line);
-            //let result: Vec<usize> = iter.map(|x| x).collect();
-            //assert_ne!(result, char_break, "{}", line);
+            let result: Vec<usize> = iter.map(|x| x).collect();
+            assert_ne!(result, char_break, "{}", line);
             continue;
         }
 

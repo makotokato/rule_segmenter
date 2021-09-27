@@ -3,6 +3,7 @@ mod sentence;
 mod utils;
 mod word;
 
+pub use crate::sentence::SentenceBreakIterator;
 pub use crate::sentence::SentenceBreakIteratorLatin1;
 pub use crate::word::WordBreakIterator;
 pub use crate::word::WordBreakIteratorLatin1;
@@ -15,7 +16,6 @@ mod tests {
 
     #[test]
     fn rule_break() {
-
         let s = "\u{0001}\u{00ad}";
         let mut iter = WordBreakIterator::new(&s);
         assert_eq!(Some(0), iter.next());

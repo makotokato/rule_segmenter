@@ -57,8 +57,7 @@ impl<'a> WordBreakIteratorLatin1<'a> {
     }
 }
 
-/// UTF-16 version of break iterator.
-
+// UTF-16 version of break iterator.
 break_iterator_impl!(WordBreakIteratorUtf16, Utf16Indices<'a>, u32);
 
 impl<'a> WordBreakIteratorUtf16<'a> {
