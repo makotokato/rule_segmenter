@@ -5,6 +5,7 @@ use std::io::Write;
 use std::path::Path;
 
 const WORD_SEGMENTER_JSON: &[u8; 263214] = include_bytes!("data/w.json");
+const SENTENCE_SEGMENTER_JSON: &[u8] = include_bytes!("data/sentence.json");
 
 #[derive(Deserialize, Debug)]
 struct SegmenterPropertyValueMap {
@@ -55,13 +56,13 @@ fn get_index_from_name(properties_names: &Vec<String>, s: &str) -> usize {
     properties_names.iter().position(|n| n.eq(s)).unwrap()
 }
 
-fn main() {
+fn generate_table(file_name: &str, json_data: &[u8]) {
     let mut properties_map: [u8; 0x20000] = [0; 0x20000];
     let mut properties_names = Vec::<String>::new();
     let mut simple_properties_count = 0;
 
     let word_segmenter: SegmenterRuleTable =
-        serde_json::from_slice(WORD_SEGMENTER_JSON).expect("JSON syntax error");
+        serde_json::from_slice(json_data).expect("JSON syntax error");
 
     properties_names.push("Unknown".to_string());
     simple_properties_count += 1;
@@ -216,7 +217,7 @@ fn main() {
     }
 
     let out_dir = env::var("OUT_DIR").unwrap();
-    let out = Path::new(&out_dir).join("generated_table.rs");
+    let out = Path::new(&out_dir).join(file_name);
     let mut out = File::create(&out).unwrap();
     let mut i = 0;
 
@@ -276,7 +277,7 @@ fn main() {
     .ok();
     writeln!(
         out,
-        "pub const CODEPOINT_LAST_PROPERTY: i8 = {};",
+        "pub const LAST_CODEPOINT_PROPERTY: i8 = {};",
         simple_properties_count - 1
     )
     .ok();
@@ -305,4 +306,8 @@ fn main() {
     writeln!(out, "pub const BREAK_RULE: i8 = -128;").ok();
     writeln!(out, "pub const NOT_MATCH_RULE: i8 = -2;").ok();
     writeln!(out, "pub const KEEP_RULE: i8 = -1;").ok();
+}
+
+fn main() {
+    generate_table("generated_word_table.rs", WORD_SEGMENTER_JSON);
 }

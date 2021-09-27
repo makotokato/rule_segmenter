@@ -1,25 +1,29 @@
 use core::char;
 use core::str::CharIndices;
 
-include!(concat!(env!("OUT_DIR"), "/generated_table.rs"));
+use crate::word;
 
-fn get_break_property_utf32(codepoint: u32) -> u8 {
+pub const BREAK_RULE: i8 = -128;
+pub const NOT_MATCH_RULE: i8 = -2;
+pub const KEEP_RULE: i8 = -1;
+
+fn get_break_property_utf32(codepoint: u32, property_table: &[&[u8; 1024]; 128]) -> u8 {
     let codepoint = codepoint as usize;
     if codepoint >= 0x20000 {
-        panic!("Unspoorted");
+        return 0;
     }
-    PROPERTY_TABLE[codepoint / 1024][(codepoint & 0x3ff)]
+    property_table[codepoint / 1024][(codepoint & 0x3ff)]
 }
 
 #[inline]
-fn get_break_property_latin1(codepoint: u8) -> u8 {
+fn get_break_property_latin1(codepoint: u8, property_table: &[&[u8; 1024]; 128]) -> u8 {
     let codepoint = codepoint as usize;
-    PROPERTY_TABLE[codepoint / 1024][(codepoint & 0x3ff)]
+    property_table[codepoint / 1024][(codepoint & 0x3ff)]
 }
 
 #[inline]
-fn get_break_property_utf8(codepoint: char) -> u8 {
-    get_break_property_utf32(codepoint as u32)
+fn get_break_property_utf8(codepoint: char, property_table: &[&[u8; 1024]; 128]) -> u8 {
+    get_break_property_utf32(codepoint as u32, property_table)
 }
 
 #[inline]
@@ -54,7 +58,11 @@ macro_rules! break_iterator_impl {
             current_pos_data: Option<(usize, $char_type)>,
             result_cache: Vec<usize>,
             break_state_table: &'a [i8],
+            property_table: &'a [&'a [u8; 1024]; 128],
             rule_property_count: usize,
+            last_codepoint_property: i8,
+            sot_property: u8,
+            eot_property: u8,
         }
 
         impl<'a> Iterator for $name<'a> {
@@ -66,7 +74,7 @@ macro_rules! break_iterator_impl {
                     if self.current_pos_data.is_some() {
                         // SOT x anything
                         let right_prop = self.get_break_property();
-                        if self.is_break_from_table(PROP_SOT as u8, right_prop) {
+                        if self.is_break_from_table(self.sot_property, right_prop) {
                             return Some(self.current_pos_data.unwrap().0);
                         }
                     }
@@ -87,7 +95,7 @@ macro_rules! break_iterator_impl {
                             &self.break_state_table,
                             self.rule_property_count,
                             left_prop,
-                            PROP_EOT as u8,
+                            self.eot_property,
                         ) == NOT_MATCH_RULE
                         {}
                         return Some(self.len);
@@ -116,7 +124,7 @@ macro_rules! break_iterator_impl {
                                     &self.break_state_table,
                                     self.rule_property_count,
                                     break_state as u8,
-                                    PROP_EOT as u8,
+                                    self.eot_property as u8,
                                 ) == NOT_MATCH_RULE
                                 {
                                     self.iter = previous_iter;
@@ -139,7 +147,7 @@ macro_rules! break_iterator_impl {
                                 break;
                             }
                             if previous_break_state >= 0
-                                && previous_break_state <= CODEPOINT_LAST_PROPERTY
+                                && previous_break_state <= self.last_codepoint_property
                             {
                                 // Move marker
                                 previous_iter = self.iter.clone();
@@ -194,17 +202,17 @@ impl<'a> WordBreakIterator<'a> {
             len: input.len(),
             current_pos_data: None,
             result_cache: Vec::new(),
-            break_state_table: &BREAK_STATE_MACHINE_TABLE,
-            rule_property_count: PROP_COUNT,
+            break_state_table: &word::BREAK_STATE_MACHINE_TABLE,
+            property_table: &word::PROPERTY_TABLE,
+            rule_property_count: word::PROP_COUNT,
+            last_codepoint_property: word::LAST_CODEPOINT_PROPERTY,
+            sot_property: word::PROP_SOT as u8,
+            eot_property: word::PROP_EOT as u8,
         }
     }
 
     fn get_break_property(&mut self) -> u8 {
-        self.get_break_property_with_rule(self.current_pos_data.unwrap().1)
-    }
-
-    fn get_break_property_with_rule(&mut self, c: char) -> u8 {
-        get_break_property_utf8(c)
+        get_break_property_utf8(self.current_pos_data.unwrap().1, self.property_table)
     }
 
     #[inline]
@@ -218,7 +226,7 @@ impl<'a> WordBreakIterator<'a> {
     }
 }
 
-/// Latin-1 version of line break iterator.
+/// Latin-1 version of rule based break iterator.
 #[derive(Clone)]
 struct Latin1Indices<'a> {
     front_offset: usize,
@@ -253,19 +261,18 @@ impl<'a> WordBreakIteratorLatin1<'a> {
             len: input.len(),
             current_pos_data: None,
             result_cache: Vec::new(),
-            break_state_table: &BREAK_STATE_MACHINE_TABLE,
-            rule_property_count: PROP_COUNT,
+            break_state_table: &word::BREAK_STATE_MACHINE_TABLE,
+            property_table: &word::PROPERTY_TABLE,
+            rule_property_count: word::PROP_COUNT,
+            last_codepoint_property: word::LAST_CODEPOINT_PROPERTY,
+            sot_property: word::PROP_SOT as u8,
+            eot_property: word::PROP_EOT as u8,
         }
     }
 
     #[inline]
     fn get_break_property(&mut self) -> u8 {
-        self.get_break_property_with_rule(self.current_pos_data.unwrap().1)
-    }
-
-    #[inline]
-    fn get_break_property_with_rule(&mut self, c: u8) -> u8 {
-        get_break_property_latin1(c)
+        get_break_property_latin1(self.current_pos_data.unwrap().1, self.property_table)
     }
 
     #[inline]
