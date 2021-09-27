@@ -271,7 +271,7 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
 
     writeln!(
         out,
-        "pub const PROP_COUNT: usize = {};",
+        "pub const PROPERTY_COUNT: usize = {};",
         properties_names.len()
     )
     .ok();
@@ -310,4 +310,5 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
 
 fn main() {
     generate_table("generated_word_table.rs", WORD_SEGMENTER_JSON);
+    generate_table("generated_sentence_table.rs", SENTENCE_SEGMENTER_JSON);
 }
