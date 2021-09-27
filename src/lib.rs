@@ -6,6 +6,7 @@ mod word;
 pub use crate::sentence::SentenceBreakIteratorLatin1;
 pub use crate::word::WordBreakIterator;
 pub use crate::word::WordBreakIteratorLatin1;
+pub use crate::word::WordBreakIteratorUtf16;
 
 #[cfg(test)]
 mod tests {

@@ -1,5 +1,3 @@
-use core::char;
-
 pub const BREAK_RULE: i8 = -128;
 pub const NOT_MATCH_RULE: i8 = -2;
 pub const KEEP_RULE: i8 = -1;
@@ -67,9 +65,9 @@ macro_rules! break_iterator_impl {
 
                     if self.current_pos_data.is_none() {
                         // EOF
-                        if self.get_break_state_from_table(left_prop, self.eot_property)
-                            == NOT_MATCH_RULE
-                        {}
+                        //if self.get_break_state_from_table(left_prop, self.eot_property)
+                        //    == NOT_MATCH_RULE
+                        //{}
                         return Some(self.len);
                     }
                     let right_prop = self.get_break_property();
@@ -120,7 +118,7 @@ macro_rules! break_iterator_impl {
                         if break_state == NOT_MATCH_RULE {
                             self.iter = previous_iter;
                             self.current_pos_data = previous_pos_data;
-                            println!("NOT_MATCH {}", previous_pos_data.unwrap().0);
+                            //println!("NOT_MATCH {}", previous_pos_data.unwrap().0);
                             return Some(previous_pos_data.unwrap().0);
                         }
                         return Some(self.current_pos_data.unwrap().0);

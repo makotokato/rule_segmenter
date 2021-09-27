@@ -1,5 +1,6 @@
 use rule_segmenter::WordBreakIterator;
 use rule_segmenter::WordBreakIteratorLatin1;
+use rule_segmenter::WordBreakIteratorUtf16;
 use std::char;
 use std::fs::File;
 use std::io::prelude::*;
@@ -88,10 +89,10 @@ fn run_word_break_test() {
         }
 
         {
-            //println!("UTF16: {}", line);
-            //let iter = LineBreakIteratorUTF16::new(&u16_vec);
-            //let result: Vec<usize> = iter.map(|x| x).collect();
-            //assert_eq!(result, u16_break, "UTF16: {}", line);
+            println!("UTF16: {}", line);
+            let iter = WordBreakIteratorUtf16::new(&u16_vec);
+            let result: Vec<usize> = iter.map(|x| x).collect();
+            assert_eq!(result, u16_break, "UTF16: {}", line);
         }
 
         if ascii_only {
