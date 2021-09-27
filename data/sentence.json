@@ -71,7 +71,8 @@
 ], "rules": [
 { "left": ["sot"], "right": ["Any"], "break_state": true },
 { "left": ["Sep", "Lower", "Upper", "OLetter", "Numeric", "Extend", "Format"], "right": ["eot"], "break_state": true },
-{ "left": ["STerm_Close_Sp"], "right": ["eot"], "break_state": true },
+{ "left": ["ATerm_Close", "ATerm_Close_Sp", "ATerm_Close_Sp_ParaSep"], "right": ["eot"], "break_state": true },
+{ "left": ["STerm_Close", "STerm_Close_Sp", "STerm_Close_Sp_ParaSep"], "right": ["eot"], "break_state": true },
 { "left": ["CR"], "right": ["LF"], "break_state": false },
 { "left": ["Sep", "CR", "LF"], "right": ["ATerm", "Numeric", "Sep", "Lower", "Upper", "OLetter", "Sp", "Unknown", "STerm", "Close", "SContinue", "Format", "Extend", "Sep", "CR"], "break_state": true },
 { "left": ["Sep", "LF"], "right": ["LF"], "break_state": true },
@@ -82,6 +83,6 @@
 { "left": ["ATerm_Close_Sp_ParaSep", "STerm_Close_Sp_ParaSep"], "right": ["ATerm", "Lower", "OLetter", "Upper", "Numeric", "STerm"], "break_state": true },
 { "left": ["ATerm_Close_Sp", "STerm_Close_Sp"], "right": ["Numeric"], "break_state": true },
 { "left": ["ATerm_Close", "STerm", "STerm_Close"], "right": ["Numeric"], "break_state": true },
-{ "left": ["ATerm", "STerm"], "right": ["Unknown"], "break_state": true },
+{ "left": ["ATerm", "STerm"], "right": ["Unknown", "Upper", "OLetter", "ATerm", "STerm"], "break_state": true },
 { "left": ["Any"], "right": ["Any"], "break_state": false }
 ]}

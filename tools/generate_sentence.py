@@ -337,7 +337,8 @@ print("], \"rules\": [")
 print("{ \"left\": [\"sot\"], \"right\": [\"Any\"], \"break_state\": true },")
 # SB2
 print("{ \"left\": [\"Sep\", \"Lower\", \"Upper\", \"OLetter\", \"Numeric\", \"Extend\", \"Format\"], \"right\": [\"eot\"], \"break_state\": true },")
-print("{ \"left\": [\"STerm_Close_Sp\"], \"right\": [\"eot\"], \"break_state\": true },")
+print("{ \"left\": [\"ATerm_Close\", \"ATerm_Close_Sp\", \"ATerm_Close_Sp_ParaSep\"], \"right\": [\"eot\"], \"break_state\": true },")
+print("{ \"left\": [\"STerm_Close\", \"STerm_Close_Sp\", \"STerm_Close_Sp_ParaSep\"], \"right\": [\"eot\"], \"break_state\": true },")
 # SB3
 print("{ \"left\": [\"CR\"], \"right\": [\"LF\"], \"break_state\": false },")
 # SB4
@@ -359,7 +360,7 @@ print("{ \"left\": [\"ATerm\", \"ATerm_Close\", \"ATerm_Close_Sp\", \"STerm\", \
 print("{ \"left\": [\"ATerm_Close_Sp_ParaSep\", \"STerm_Close_Sp_ParaSep\"], \"right\": [\"ATerm\", \"Lower\", \"OLetter\", \"Upper\", \"Numeric\", \"STerm\"], \"break_state\": true },")
 print("{ \"left\": [\"ATerm_Close_Sp\", \"STerm_Close_Sp\"], \"right\": [\"Numeric\"], \"break_state\": true },")
 print("{ \"left\": [\"ATerm_Close\", \"STerm\", \"STerm_Close\"], \"right\": [\"Numeric\"], \"break_state\": true },")
-print("{ \"left\": [\"ATerm\", \"STerm\"], \"right\": [\"Unknown\"], \"break_state\": true },")
+print("{ \"left\": [\"ATerm\", \"STerm\"], \"right\": [\"Unknown\", \"Upper\", \"OLetter\", \"ATerm\", \"STerm\"], \"break_state\": true },")
 # SB998
 print("{ \"left\": [\"Any\"], \"right\": [\"Any\"], \"break_state\": false }")
 print("]}")
