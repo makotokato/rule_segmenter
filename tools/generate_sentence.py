@@ -160,6 +160,8 @@ print("{ \"name\": \"STerm_Close\", \"value\": { \"left\": \"STerm_Close\", \"ri
 print("{ \"name\": \"STerm_Close_Sp\", \"value\": { \"left\": \"STerm_Close_Sp\", \"right\": \"Extend\" }},")
 print("{ \"name\": \"STerm_Close_Sp\", \"value\": { \"left\": \"STerm_Close_Sp\", \"right\": \"Format\" }},")
 print("{ \"name\": \"Upper_ATerm\", \"value\": { \"left\": \"Upper_ATerm\", \"right\": \"Extend\" }},")
+print("{ \"name\": \"Upper_ATerm\", \"value\": { \"left\": \"Upper_ATerm\", \"right\": \"Format\" }},")
+print("{ \"name\": \"Lower_ATerm\", \"value\": { \"left\": \"Lower_ATerm\", \"right\": \"Extend\" }},")
 print("{ \"name\": \"Lower_ATerm\", \"value\": { \"left\": \"Lower_ATerm\", \"right\": \"Format\" }},")
 # SB7
 print("{ \"name\": \"Upper_ATerm\", \"value\": { \"left\": \"Upper\", \"right\": \"ATerm\" }},")
@@ -174,17 +176,23 @@ print("{ \"name\": \"ATerm_Close_Sp\", \"value\": { \"left\": \"Upper_ATerm\", \
 print("{ \"name\": \"ATerm_Close_Sp\", \"value\": { \"left\": \"Lower_ATerm\", \"right\": \"Sp\" }},")
 print("{ \"name\": \"ATerm_Close_Sp\", \"value\": { \"left\": \"ATerm_Close\", \"right\": \"Sp\" }},")
 print("{ \"name\": \"ATerm_Close_Sp\", \"value\": { \"left\": \"ATerm_Close_Sp\", \"right\": \"Sp\" }},")
+print("{ \"name\": \"ATerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"ATerm_Close\", \"right\": \"Sep\" }},")
+print("{ \"name\": \"ATerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"ATerm_Close\", \"right\": \"CR\" }},")
+print("{ \"name\": \"ATerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"ATerm_Close\", \"right\": \"LF\" }},")
 print("{ \"name\": \"ATerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"ATerm_Close_Sp\", \"right\": \"Sep\" }},")
 print("{ \"name\": \"ATerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"ATerm_Close_Sp\", \"right\": \"CR\" }},")
 print("{ \"name\": \"ATerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"ATerm_Close_Sp\", \"right\": \"LF\" }},")
-print("{ \"name\": \"ATerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"ATerm_Close_Sp_ParaSep\", \"right\": \"Sep\" }},")
-print("{ \"name\": \"ATerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"ATerm_Close_Sp_ParaSep\", \"right\": \"CR\" }},")
-print("{ \"name\": \"ATerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"ATerm_Close_Sp_ParaSep\", \"right\": \"LF\" }},")
+#print("{ \"name\": \"ATerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"ATerm_Close_Sp_ParaSep\", \"right\": \"Sep\" }},")
+#print("{ \"name\": \"ATerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"ATerm_Close_Sp_ParaSep\", \"right\": \"CR\" }},")
+#print("{ \"name\": \"ATerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"ATerm_Close_Sp_ParaSep\", \"right\": \"LF\" }},")
 print("{ \"name\": \"STerm_Close\", \"value\": { \"left\": \"STerm\", \"right\": \"Close\" }},")
 print("{ \"name\": \"STerm_Close\", \"value\": { \"left\": \"STerm_Close\", \"right\": \"Close\" }},")
 print("{ \"name\": \"STerm_Close_Sp\", \"value\": { \"left\": \"STerm\", \"right\": \"Sp\" }},")
 print("{ \"name\": \"STerm_Close_Sp\", \"value\": { \"left\": \"STerm_Close\", \"right\": \"Sp\" }},")
 print("{ \"name\": \"STerm_Close_Sp\", \"value\": { \"left\": \"STerm_Close_Sp\", \"right\": \"Sp\" }},")
+print("{ \"name\": \"STerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"STerm_Close\", \"right\": \"Sep\" }},")
+print("{ \"name\": \"STerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"STerm_Close\", \"right\": \"CR\" }},")
+print("{ \"name\": \"STerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"STerm_Close\", \"right\": \"LF\" }},")
 print("{ \"name\": \"STerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"STerm_Close_Sp\", \"right\": \"Sep\" }},")
 print("{ \"name\": \"STerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"STerm_Close_Sp\", \"right\": \"CR\" }},")
 print("{ \"name\": \"STerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"STerm_Close_Sp\", \"right\": \"LF\" }}")
@@ -202,8 +210,9 @@ print("{ \"left\": [\"Lower_ATerm\", \"Upper_ATerm\"], \"right\": [\"eot\"], \"b
 # SB3
 print("{ \"left\": [\"CR\"], \"right\": [\"LF\"], \"break_state\": false },")
 # SB4
-print("{ \"left\": [\"Sep\", \"CR\", \"LF\"], \"right\": [\"ATerm\", \"Numeric\", \"Sep\", \"Lower\", \"Upper\", \"OLetter\", \"Sp\", \"Unknown\", \"STerm\", \"Close\", \"SContinue\", \"Format\", \"Extend\", \"Sep\", \"CR\"], \"break_state\": true },")
-print("{ \"left\": [\"Sep\", \"LF\"], \"right\": [\"LF\"], \"break_state\": true },")
+print("{ \"left\": [\"Sep\", \"CR\", \"LF\"], \"right\": [\"ATerm\", \"Numeric\", \"Sep\", \"Lower\", \"Upper\", \"OLetter\", \"Sp\", \"Unknown\", \"STerm\", \"Close\", \"SContinue\", \"Format\", \"Extend\", \"CR\"], \"break_state\": true },")
+print("{ \"left\": [\"Sep\", \"LF\", \"ATerm_Close\", \"ATerm_Close_Sp\"], \"right\": [\"LF\"], \"break_state\": true },")
+print("{ \"left\": [\"ATerm_Close_Sp_ParaSep\", \"STerm_Close_Sp_ParaSep\"], \"right\": [\"ATerm\", \"Numeric\", \"Lower\", \"Upper\", \"OLetter\", \"Sp\", \"Unknown\", \"STerm\", \"Close\", \"SContinue\", \"Format\", \"Extend\"], \"break_state\": true },")
 # SB6
 print("{ \"left\": [\"ATerm\", \"Upper_ATerm\", \"Lower_ATerm\"], \"right\": [\"Numeric\"], \"break_state\": false },")
 # SB7
@@ -214,13 +223,15 @@ print("{ \"left\": [\"Lower_ATerm\", \"Upper_ATerm\"], \"right\": [\"Lower\"], \
 # SB8a
 print("{ \"left\": [\"ATerm\", \"ATerm_Close\", \"ATerm_Close_Sp\", \"STerm\", \"STerm_Close\", \"STerm_Close_Sp\", \"Lower_ATerm\", \"Upper_ATerm\"], \"right\": [\"SContinue\", \"ATerm\", \"STerm\"], \"break_state\": false },")
 # SB9
+# print("{ \"left\": [\"ATerm\", \"ATerm_Close\"], \"right\": [\"Sep\", \"CR\", \"LF\"], \"break_state\": false },")
+# print("{ \"left\": [\"STerm\", \"STerm_Close\"], \"right\": [\"Sep\", \"CR\", \"LF\"], \"break_state\": false },")
 # print("{ \"left\": [\"ATerm\", \"ATerm_Close\", \"STerm\", \"STerm_Close\"], \"right\": [\"Close\", \"Sp\", \"Sep\", \"CR\", \"LF\"], \"break_state\": false },")
 # print("{ \"left\": [\"ATerm\", \"ATerm_Close\", \"ATerm_Close_Sp\"], \"right\": [\"Sp\", \"Sep\", \"CR\", \"LF\"], \"break_state\": false },")
 # print("{ \"left\": [\"ATerm\", \"ATerm_Close\", \"ATerm_Close_Sp\", \"ATearm_Close_Sp_ParaSep\"], \"right\": [\"Sp\", \"ParaSep\"], \"break_state\": true },")
 # SB11
 print("{ \"left\": [\"ATerm_Close_Sp_ParaSep\", \"STerm_Close_Sp_ParaSep\"], \"right\": [\"ATerm\", \"Lower\", \"OLetter\", \"Upper\", \"Numeric\", \"STerm\"], \"break_state\": true },")
-print("{ \"left\": [\"ATerm_Close_Sp\", \"STerm_Close_Sp\"], \"right\": [\"Numeric\"], \"break_state\": true },")
-print("{ \"left\": [\"ATerm_Close\", \"STerm\", \"STerm_Close\"], \"right\": [\"Numeric\"], \"break_state\": true },")
+print("{ \"left\": [\"ATerm_Close_Sp\", \"STerm_Close_Sp\"], \"right\": [\"Numeric\", \"Upper\", \"Close\"], \"break_state\": true },")
+print("{ \"left\": [\"ATerm_Close\", \"STerm\", \"STerm_Close\"], \"right\": [\"Numeric\", \"Upper\"], \"break_state\": true },")
 print("{ \"left\": [\"ATerm\", \"Upper_ATerm\", \"Lower_ATerm\", \"STerm\"], \"right\": [\"Unknown\", \"Upper\", \"Lower\", \"OLetter\", \"ATerm\", \"STerm\"], \"break_state\": true },")
 # SB998
 print("{ \"left\": [\"Any\"], \"right\": [\"Any\"], \"break_state\": false }")
