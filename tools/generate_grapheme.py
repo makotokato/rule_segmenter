@@ -4,43 +4,14 @@ import os
 import re
 import subprocess
 
-
-def get_script_list(script_name, general_category):
+def get_grapheme_property_list(property_name):
     value = []
-    with open('Scripts.txt', 'r') as file:
+    with open('GraphemeBreakProperty.txt', 'r') as file:
         line = file.readline()
         while line:
             line = line.strip()
             if not line.startswith('#'):
-                m = re.search("([0-9A-F]{1,6})\.\.([0-9A-F]{1,6})\s*\;\s*([A-Za-z]{2,})\s*#\s*([A-Za-z&]{2,})",
-                              line)
-                if m:
-                    if (script_name == "" or m.group(3) == script_name) and (general_category == "" or m.group(4) == general_category):
-                        length = int(m.group(2), 16) - int(m.group(1), 16) + 1
-                        s = int(m.group(1), 16)
-                        for x in range(length):
-                            value.append(s + x);
-                else:
-                    m = re.search("([0-9A-F]{1,6})\s*\;\s*([A-Za-z]{2,})\s*#\s*([A-Za-z&]{2,})", line)
-                    if m:
-                        if int(m.group(1), 16) >= 0x20000:
-                            line = file.readline()
-                            continue
-                        if (script_name == "" or m.group(2) == script_name) and (general_category == "" or m.group(3) == general_category):
-                            s = int(m.group(1), 16)
-                            value.append(s);
-            line = file.readline()
-    return value
-
-
-def get_property_list(property_name):
-    value = []
-    with open('DerivedCoreProperties.txt', 'r') as file:
-        line = file.readline()
-        while line:
-            line = line.strip()
-            if not line.startswith('#'):
-                m = re.search("([0-9A-F]{1,6})\.\.([0-9A-F]{1,6})\s*\;\s*(\w{2,})", line)
+                m = re.search("([0-9A-F]{1,6})\.\.([0-9A-F]{1,6})\s*\;\s*(\w{1,})", line)
                 if m:
                     if m.group(3) == property_name:
                         length = int(m.group(2), 16) - int(m.group(1), 16) + 1
@@ -48,7 +19,7 @@ def get_property_list(property_name):
                         for x in range(length):
                             value.append(s + x);
                 else:
-                    m = re.search("([0-9A-F]{1,6})\s*\;\s*(\w{2,})", line)
+                    m = re.search("([0-9A-F]{1,6})\s*\;\s*(\w{1,})", line)
                     if m:
                         if int(m.group(1), 16) >= 0x20000:
                             line = file.readline()
@@ -58,31 +29,7 @@ def get_property_list(property_name):
                             value.append(s);
             line = file.readline()
 
-    return value
-
-
-def get_proplist_list(property_name):
-    value = []
-    with open('PropList.txt', 'r') as file:
-        line = file.readline()
-        while line:
-            line = line.strip()
-            if not line.startswith('#'):
-                m = re.search("([0-9A-F]{1,6})\.\.([0-9A-F]{1,6})\s*\;\s*(\w{2,})", line)
-                if m:
-                    if m.group(3) == property_name:
-                        length = int(m.group(2), 16) - int(m.group(1), 16) + 1
-                        s = int(m.group(1), 16)
-                        for x in range(length):
-                            value.append(s + x);
-                else:
-                    m = re.search("([0-9A-F]{1,6})\s*\;\s*(\w{2,})", line)
-                    if m:
-                        if m.group(2) == property_name:
-                            s = int(m.group(1), 16)
-                            value.append(s);
-            line = file.readline()
-
+    value.sort()
     return value
 
 
@@ -111,213 +58,84 @@ def get_emoji_list(property_name):
     return value
 
 
-def get_linebreak_list(property_name):
-    value = []
-    with open('LineBreak.txt', 'r') as file:
-        line = file.readline()
-        while line:
-            line = line.strip()
-            if not line.startswith('#'):
-                m = re.search("([0-9A-F]{1,6})\.\.([0-9A-F]{1,6})\;(\w{2,})", line)
-                if m:
-                    if m.group(3) == property_name:
-                        length = int(m.group(2), 16) - int(m.group(1), 16) + 1
-                        s = int(m.group(1), 16)
-                        for x in range(length):
-                            value.append(s + x);
-                else:
-                    m = re.search("([0-9A-F]{1,6})\;(\w{2,})", line)
-                    if m:
-                        if m.group(2) == property_name:
-                            s = int(m.group(1), 16)
-                            value.append(s);
-            line = file.readline()
-    return value
-
-
-def get_indic_syllabic(name):
-    value = []
-    with open('IndicSyllabicCategory.txt', 'r') as file:
-        line = file.readline()
-        while line:
-            line = line.strip()
-            if not line.startswith('#'):
-                m = re.search("([0-9A-F]{1,6})\.\.([0-9A-F]{1,6})\s*\;\s*(\w{1,})", line)
-                if m:
-                    if m.group(3) == name:
-                        length = int(m.group(2), 16) - int(m.group(1), 16) + 1
-                        s = int(m.group(1), 16)
-                        for x in range(length):
-                            value.append(s + x);
-                else:
-                    m = re.search("([0-9A-F]{1,6})\s*\;\s*(\w{1,})", line)
-                    if m:
-                        if m.group(2) == name:
-                            s = int(m.group(1), 16)
-                            value.append(s);
-            line = file.readline()
-    return value
-
-
-def get_hangul_syllable(name):
-    value = []
-    with open('HangulSyllableType.txt', 'r') as file:
-        line = file.readline()
-        while line:
-            line = line.strip()
-            if not line.startswith('#'):
-                m = re.search("([0-9A-F]{1,6})\.\.([0-9A-F]{1,6})\s*\;\s*(\w{1,})", line)
-                if m:
-                    if m.group(3) == name:
-                        length = int(m.group(2), 16) - int(m.group(1), 16) + 1
-                        s = int(m.group(1), 16)
-                        for x in range(length):
-                            value.append(s + x);
-                else:
-                    m = re.search("([0-9A-F]{1,6})\s*\;\s*(\w{1,})", line)
-                    if m:
-                        if m.group(2) == name:
-                            s = int(m.group(1), 16)
-                            value.append(s);
-            line = file.readline()
-    return value
-    
 
 print("{ \"tables\": [")
 
 # CR
-v = [0x000d]
+v = get_grapheme_property_list("CR")
 print("{ \"name\": \"CR\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 
 # LF
-v = [0x000a]
+v = get_grapheme_property_list("LF")
 print("{ \"name\": \"LF\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 
 # Control
-v = []
-v.extend(get_script_list("", "Zl"))
-v.extend(get_script_list("", "Zp"))
-v.extend(get_script_list("", "Cc"))
-v.extend(get_script_list("", "Cf"))
-v.remove(0x000d)
-v.remove(0x000a)
-v.remove(0x200c)
-v.remove(0x200d)
-v.sort()
+v = get_grapheme_property_list("Control")
 print("{ \"name\": \"Control\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 
 # Extend
-v = get_property_list("Grapheme_Extend")
-v.extend(get_emoji_list("Emoji_Modifier"))
-v.extend(get_script_list("", "Me"))
-v.extend(get_script_list("", "Mn"))
-v.append(0x200c)
-v.sort()
+v = get_grapheme_property_list("Extend")
 print("{ \"name\": \"Extend\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 extend = v
 
 # ZWJ
-v = [0x200d]
+v = get_grapheme_property_list("ZWJ")
 print("{ \"name\": \"ZWJ\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 
 # Regional_Indicator
-v = get_proplist_list("Regional_Indicator")
-v.sort()
+v = get_grapheme_property_list("Regional_Indicator")
 print("{ \"name\": \"Regional_Indicator\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 
 # Prepend
-v = get_indic_syllabic("Consonant_Preceding_Repha")
-v.extend(get_indic_syllabic("Consonant_Prefixed"))
-v.extend(get_proplist_list("Prepended_Concatenation_Mark"))
-v.sort()
+v = get_grapheme_property_list("Prepend")
 print("{ \"name\": \"Prepend\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 
 # SpacingMark
-v = get_script_list("", "Mc")
-for i in extend:
-    try:
-        v.remove(i)
-    except ValueError:
-        pass
-v.append(0x0e33)
-v.append(0x0eb3)
-v.remove(0x102b)
-v.remove(0x102c)
-v.remove(0x1038)
-for i in range(0x1062, 0x1065):
-    try:
-        v.remove(i)
-    except ValueError:
-        pass
-for i in range(0x1067, 0x106e):
-    try:
-        v.remove(i)
-    except ValueError:
-        pass
-v.remove(0x1083)
-for i in range(0x1087, 0x108d):
-    try:
-        v.remove(i)
-    except ValueError:
-        pass
-v.remove(0x108f)
-for i in range(0x109a, 0x109d):
-    try:
-        v.remove(i)
-    except ValueError:
-        pass
-# v.remove(0x1a61)
-# v.remove(0x1a63)
-# v.remove(0x1a64)
-v.remove(0xaa7b)
-v.remove(0xaa7d)
-v.remove(0x11720)
-v.remove(0x11721)
-v.sort()
+v = get_grapheme_property_list("SpacingMark")
 print("{ \"name\": \"SpacingMark\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 
 # L
-v = get_hangul_syllable("L")
+v = get_grapheme_property_list("L")
 print("{ \"name\": \"L\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 
 # V
-v = get_hangul_syllable("V")
+v = get_grapheme_property_list("V")
 print("{ \"name\": \"V\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 
 # T
-v = get_hangul_syllable("T")
+v = get_grapheme_property_list("T")
 print("{ \"name\": \"T\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 
 # LV
-v = get_hangul_syllable("LV")
+v = get_grapheme_property_list("LV")
 print("{ \"name\": \"LV\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 
 # LVT
-v = get_hangul_syllable("LVT")
+v = get_grapheme_property_list("LVT")
 print("{ \"name\": \"LVT\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
