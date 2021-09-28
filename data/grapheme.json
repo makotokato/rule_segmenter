@@ -48,17 +48,20 @@
 { "name": "RI_RI", "value": { "left": "Regional_Indicator", "right": "Regional_Indicator" }}
 ], "rules": [
 { "left": ["sot"], "right": ["Any"], "break_state": true },
-{ "left": ["L", "V", "T", "LV", "LVT", "Unknown", "RI_RI"], "right": ["eot"], "break_state": true },
+{ "left": ["L", "V", "T", "LV", "LVT", "Unknown", "RI_RI", "Extended_Pictographic_Extend", "Extended_Pictographic_Extend_ZWJ"], "right": ["eot"], "break_state": true },
 { "left": ["CR"], "right": ["LF"], "break_state": false },
 { "left": ["Control", "CR", "LF"], "right": ["Control", "CR", "Extend", "L", "LV", "LVT", "V", "T"], "break_state": true },
 { "left": ["Control", "LF"], "right": ["LF"], "break_state": true },
+{ "left": ["Extended_Pictographic_Extend_ZWJ", "Extended_Pictographic_Extend"], "right": ["Control", "CR", "LF"], "break_state": true },
 { "left": ["L"], "right": ["L", "V", "LV", "LVT"], "break_state": false },
 { "left": ["LV", "V"], "right": ["V", "T"], "break_state": false },
 { "left": ["LVT", "T"], "right": ["T"], "break_state": false },
 { "left": ["L", "V", "T", "LV", "LVT", "Regional_Indicator", "Unknown", "Extend", "SpacingMark", "Extended_Pictographic", "ZWJ", "RI_RI"], "right": ["Extend", "ZWJ"], "break_state": false },
-{ "left": ["L", "V", "T", "LV", "LVT", "Extend", "Prepend", "Unknown", "SpacingMark", "Extended_Pictographic", "ZWJ", "Regional_Indicator"], "right": ["SpacingMark"], "break_state": false },
+{ "left": ["L", "V", "T", "LV", "LVT", "Extend", "Prepend", "Unknown", "SpacingMark", "Extended_Pictographic", "ZWJ", "Regional_Indicator", "Extended_Pictographic_Extend_ZWJ", "Extended_Pictographic_Extend"], "right": ["SpacingMark"], "break_state": false },
 { "left": ["Prepend"], "right": ["Extend", "Unknown", "Regional_Indicator", "Prepend", "L", "V", "T", "LV", "LVT", "Extended_Pictographic", "ZWJ"], "break_state": false },
 { "left": ["Extended_Pictographic_Extend_ZWJ"], "right": ["Extended_Pictographic"], "break_state": false },
 { "left": ["RI_RI"], "right": ["Regional_Indicator"], "break_state": true },
+{ "left": ["Extended_Pictographic_Extend", "Extended_Pictographic_Extend_ZWJ"], "right": ["Regional_Indicator", "Prepend", "L", "V", "T", "LV", "LVT", "Extended_Pictographic", "Unknown"], "break_state": true },
+{ "left": ["RI_RI"], "right": ["Unknown"], "break_state": true },
 { "left": ["Any"], "right": ["Any"], "break_state": true }
 ]}

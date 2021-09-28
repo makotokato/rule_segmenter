@@ -345,12 +345,14 @@ print("], \"rules\": [")
 # GB1
 print("{ \"left\": [\"sot\"], \"right\": [\"Any\"], \"break_state\": true },")
 # GB2
-print("{ \"left\": [\"L\", \"V\", \"T\", \"LV\", \"LVT\", \"Unknown\", \"RI_RI\"], \"right\": [\"eot\"], \"break_state\": true },")
+print("{ \"left\": [\"L\", \"V\", \"T\", \"LV\", \"LVT\", \"Unknown\", \"RI_RI\", \"Extended_Pictographic_Extend\", \"Extended_Pictographic_Extend_ZWJ\"], \"right\": [\"eot\"], \"break_state\": true },")
 # GB3
 print("{ \"left\": [\"CR\"], \"right\": [\"LF\"], \"break_state\": false },")
 # GB4
 print("{ \"left\": [\"Control\", \"CR\", \"LF\"], \"right\": [\"Control\", \"CR\", \"Extend\", \"L\", \"LV\", \"LVT\", \"V\", \"T\"], \"break_state\": true },")
 print("{ \"left\": [\"Control\", \"LF\"], \"right\": [\"LF\"], \"break_state\": true },")
+# GB5
+print("{ \"left\": [\"Extended_Pictographic_Extend_ZWJ\", \"Extended_Pictographic_Extend\"], \"right\": [\"Control\", \"CR\", \"LF\"], \"break_state\": true },")
 # GB6 
 print("{ \"left\": [\"L\"], \"right\": [\"L\", \"V\", \"LV\", \"LVT\"], \"break_state\": false },")
 # GB7
@@ -360,7 +362,7 @@ print("{ \"left\": [\"LVT\", \"T\"], \"right\": [\"T\"], \"break_state\": false 
 # GB9
 print("{ \"left\": [\"L\", \"V\", \"T\", \"LV\", \"LVT\", \"Regional_Indicator\", \"Unknown\", \"Extend\", \"SpacingMark\", \"Extended_Pictographic\", \"ZWJ\", \"RI_RI\"], \"right\": [\"Extend\", \"ZWJ\"], \"break_state\": false },")
 # GB9a
-print("{ \"left\": [\"L\", \"V\", \"T\", \"LV\", \"LVT\", \"Extend\", \"Prepend\", \"Unknown\", \"SpacingMark\", \"Extended_Pictographic\", \"ZWJ\", \"Regional_Indicator\"], \"right\": [\"SpacingMark\"], \"break_state\": false },")
+print("{ \"left\": [\"L\", \"V\", \"T\", \"LV\", \"LVT\", \"Extend\", \"Prepend\", \"Unknown\", \"SpacingMark\", \"Extended_Pictographic\", \"ZWJ\", \"Regional_Indicator\", \"Extended_Pictographic_Extend_ZWJ\", \"Extended_Pictographic_Extend\"], \"right\": [\"SpacingMark\"], \"break_state\": false },")
 # GB9b
 print("{ \"left\": [\"Prepend\"], \"right\": [\"Extend\", \"Unknown\", \"Regional_Indicator\", \"Prepend\", \"L\", \"V\", \"T\", \"LV\", \"LVT\", \"Extended_Pictographic\", \"ZWJ\"], \"break_state\": false },")
 # GB11
@@ -369,5 +371,7 @@ print("{ \"left\": [\"Extended_Pictographic_Extend_ZWJ\"], \"right\": [\"Extende
 print("{ \"left\": [\"RI_RI\"], \"right\": [\"Regional_Indicator\"], \"break_state\": true },")
 
 # GB999
+print("{ \"left\": [\"Extended_Pictographic_Extend\", \"Extended_Pictographic_Extend_ZWJ\"], \"right\": [\"Regional_Indicator\", \"Prepend\", \"L\", \"V\", \"T\", \"LV\", \"LVT\", \"Extended_Pictographic\", \"Unknown\"], \"break_state\": true },")
+print("{ \"left\": [\"RI_RI\"], \"right\": [\"Unknown\"], \"break_state\": true },")
 print("{ \"left\": [\"Any\"], \"right\": [\"Any\"], \"break_state\": true }")
 print("]}")

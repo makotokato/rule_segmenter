@@ -11,11 +11,6 @@ use std::u32;
 fn run_grapheme_break_test() {
     // no failed tests
     let failed = [
-        "\u{231A}\u{0308}\u{0903}",
-        "\u{231A}\u{200D}",
-        "\u{231A}\u{0308}\u{200D}",
-        "\u{0061}\u{1F1E6}\u{200D}\u{1F1E7}\u{1F1E8}\u{0062}",
-        "\u{0061}\u{1F1E6}\u{1F1E7}\u{1F1E8}\u{1F1E9}\u{0062}",
     ];
 
     let f = File::open("tests/GraphemeBreakTest.txt");
