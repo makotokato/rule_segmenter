@@ -219,12 +219,26 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
     let out_dir = env::var("OUT_DIR").unwrap();
     let out = Path::new(&out_dir).join(file_name);
     let mut out = File::create(&out).unwrap();
+    let mut codepoint_table = Vec::<String>::new();
+
     let mut i = 0;
-
     let mut page = 0;
+    let mut previous = 0;
+    let mut is_same_value = true;
 
+    writeln!(out, "#[allow(dead_code)]").ok();
     writeln!(out, "pub const BREAK_PROPERTIES_{}: [u8; 1024] = [", page).ok();
+    codepoint_table.push(format!("BREAK_PROPERTIES_{}", page));
     for c in properties_map.iter() {
+        // Compress table
+        if (i % 1024) == 0 {
+            // Reset
+            is_same_value = true;
+        } else if is_same_value == true {
+            is_same_value = (previous == *c);
+        }
+        previous = *c;
+
         write!(out, "{: >2},", c).ok();
         i += 1;
 
@@ -238,14 +252,34 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
                 break;
             }
             page += 1;
+
+            // Current codepoint mapping table is filled by 0.
+            // Use common table
+            if is_same_value && *c == 0 {
+                codepoint_table.pop();
+                codepoint_table.push(format!("BREAK_PROPERTIES_FILL_BY_0"));
+            }
+
+            codepoint_table.push(format!("BREAK_PROPERTIES_{}", page));
+            writeln!(out, "#[allow(dead_code)]").ok();
             writeln!(out, "pub const BREAK_PROPERTIES_{}: [u8; 1024] = [", page).ok();
             continue;
         }
     }
 
+    writeln!(out, "#[allow(dead_code)]").ok();
+    writeln!(out, "pub const BREAK_PROPERTIES_FILL_BY_0: [u8; 1024] = [").ok();
+    for i in 0..1024 {
+        write!(out, "  0,").ok();
+        if ((i + 1) % 16) == 0 {
+            writeln!(out, "").ok();
+        }
+    }
+    writeln!(out, "];").ok();
+
     writeln!(out, "pub const PROPERTY_TABLE: [&[u8; 1024]; 128] = [").ok();
-    for i in 0..128 {
-        writeln!(out, "    &BREAK_PROPERTIES_{},", i).ok();
+    for i in codepoint_table.iter() {
+        writeln!(out, "    &{},", i).ok();
     }
     writeln!(out, "];").ok();
 
@@ -304,7 +338,9 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
     writeln!(out, "").ok();
     writeln!(out, "#[allow(dead_code)]").ok();
     writeln!(out, "pub const BREAK_RULE: i8 = -128;").ok();
+    writeln!(out, "#[allow(dead_code)]").ok();
     writeln!(out, "pub const NOT_MATCH_RULE: i8 = -2;").ok();
+    writeln!(out, "#[allow(dead_code)]").ok();
     writeln!(out, "pub const KEEP_RULE: i8 = -1;").ok();
 }
 
