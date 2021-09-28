@@ -53,7 +53,7 @@ fn set_break_state(
     }
 }
 
-fn get_index_from_name(properties_names: &Vec<String>, s: &str) -> usize {
+fn get_index_from_name(properties_names: &[String], s: &str) -> usize {
     properties_names.iter().position(|n| n.eq(s)).unwrap()
 }
 
@@ -234,8 +234,8 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
         if (i % 1024) == 0 {
             // Reset
             is_same_value = true;
-        } else if is_same_value == true {
-            is_same_value = (previous == *c);
+        } else if is_same_value {
+            is_same_value = previous == *c;
         }
         previous = *c;
 
@@ -243,7 +243,7 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
         i += 1;
 
         if (i % 16) == 0 {
-            writeln!(out, "").ok();
+            writeln!(out).ok();
         }
 
         if i > 1 && (i % 1024) == 0 {
@@ -257,7 +257,7 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
             // Use common table
             if is_same_value && *c == 0 {
                 codepoint_table.pop();
-                codepoint_table.push(format!("BREAK_PROPERTIES_FILL_BY_0"));
+                codepoint_table.push("BREAK_PROPERTIES_FILL_BY_0".to_string());
             }
 
             codepoint_table.push(format!("BREAK_PROPERTIES_{}", page));
@@ -270,9 +270,9 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
     writeln!(out, "#[allow(dead_code)]").ok();
     writeln!(out, "pub const BREAK_PROPERTIES_FILL_BY_0: [u8; 1024] = [").ok();
     for i in 0..1024 {
-        write!(out, "  0,").ok();
+        write!(out, " 0,").ok();
         if ((i + 1) % 16) == 0 {
-            writeln!(out, "").ok();
+            writeln!(out).ok();
         }
     }
     writeln!(out, "];").ok();
@@ -295,7 +295,7 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
         write!(out, "{: >4},", c).ok();
         i += 1;
         if ((i - 1) % properties_names.len()) == 0 {
-            writeln!(out, "").ok();
+            writeln!(out).ok();
             if (i / properties_names.len()) < properties_names.len() {
                 writeln!(out, "// {}", properties_names[i / properties_names.len()]).ok();
             }
@@ -330,12 +330,11 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
     .ok();
 
     let mut i = 0;
-    for p in properties_names.iter() {
+    for (i, p) in properties_names.iter().enumerate() {
         writeln!(out, "// {} = {}", p, i).ok();
-        i += 1;
     }
 
-    writeln!(out, "").ok();
+    writeln!(out).ok();
     writeln!(out, "#[allow(dead_code)]").ok();
     writeln!(out, "pub const BREAK_RULE: i8 = -128;").ok();
     writeln!(out, "#[allow(dead_code)]").ok();

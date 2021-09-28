@@ -79,7 +79,7 @@ macro_rules! break_iterator_impl {
                         // This isn't simple rule set. We need marker to restore iterator to previous position.
                         let mut previous_iter = self.iter.clone();
                         let mut previous_pos_data = self.current_pos_data;
-                        println!("COMPLEX {}", self.current_pos_data.unwrap().0);
+                        //println!("COMPLEX {}", self.current_pos_data.unwrap().0);
 
                         loop {
                             self.current_pos_data = self.iter.next();
@@ -124,10 +124,6 @@ macro_rules! break_iterator_impl {
                         return Some(self.current_pos_data.unwrap().0);
                     }
 
-                    if break_state == NOT_MATCH_RULE {
-                        // TODO
-                    }
-
                     if self.is_break_from_table(left_prop, right_prop) {
                         return Some(self.current_pos_data.unwrap().0);
                     }
@@ -151,7 +147,7 @@ macro_rules! break_iterator_impl {
                 //println!("left={} right={}", left, right);
                 //println!(
                 //    "break={}",
-                //    rule_table[(left as usize) * property_count + (right as usize)]
+                //    self.break_state_table[(left as usize) * self.rule_property_count + (right as usize)]
                 //);
                 self.break_state_table
                     [(left as usize) * self.rule_property_count + (right as usize)]
