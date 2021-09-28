@@ -11,9 +11,6 @@ use std::u32;
 fn run_word_break_test() {
     // no failed tests
     let failed = [
-        "\u{0020}\u{0308}\u{0020}",
-        "\u{200D}\u{0308}\u{231A}",
-        "\u{0061}\u{1F1E6}\u{1F1E7}\u{200D}\u{1F1E8}\u{0062}",
     ];
 
     let f = File::open("tests/WordBreakTest.txt");
