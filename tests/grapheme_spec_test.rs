@@ -1,5 +1,5 @@
 use rule_segmenter::{
-    SentenceBreakIterator, SentenceBreakIteratorLatin1, SentenceBreakIteratorUtf16,
+    GraphemeBreakIterator, GraphemeBreakIteratorLatin1, GraphemeBreakIteratorUtf16,
 };
 use std::char;
 use std::fs::File;
@@ -8,20 +8,17 @@ use std::io::BufReader;
 use std::u32;
 
 #[test]
-fn run_sentence_break_test() {
+fn run_grapheme_break_test() {
     // no failed tests
     let failed = [
-	"\u{002e}\u{0030}",
-        "\u{0021}\u{0061}",
-        "\u{0028}\u{0022}\u{0047}\u{006F}\u{002E}\u{0022}\u{0029}\u{0020}\u{0028}\u{0048}\u{0065}\u{0020}\u{0064}\u{0069}\u{0064}\u{002E}\u{0029}",
-        "\u{0033}\u{002E}\u{0034}",
-        "\u{0074}\u{0068}\u{0065}\u{0020}\u{0072}\u{0065}\u{0073}\u{0070}\u{002E}\u{0020}\u{006C}\u{0065}\u{0061}\u{0064}\u{0065}\u{0072}\u{0073}\u{0020}\u{0061}\u{0072}\u{0065}",
-        "\u{0063}\u{002E}\u{0044}",
-        "\u{0043}\u{002E}\u{0044}",
-        "\u{000A}\u{0308}\u{0903}",
+        "\u{231A}\u{0308}\u{0903}",
+        "\u{231A}\u{200D}",
+        "\u{231A}\u{0308}\u{200D}",
+        "\u{0061}\u{1F1E6}\u{200D}\u{1F1E7}\u{1F1E8}\u{0062}",
+        "\u{0061}\u{1F1E6}\u{1F1E7}\u{1F1E8}\u{1F1E9}\u{0062}",
     ];
 
-    let f = File::open("tests/SentenceBreakTest.txt");
+    let f = File::open("tests/GraphemeBreakTest.txt");
     let f = BufReader::new(f.unwrap());
     for line in f.lines() {
         let line = line.unwrap();
@@ -79,7 +76,7 @@ fn run_sentence_break_test() {
             count = count + 1
         }
         let s: String = char_vec.into_iter().collect();
-        let mut iter = SentenceBreakIterator::new(&s);
+        let mut iter = GraphemeBreakIterator::new(&s);
         if failed.contains(&&s.as_str()) {
             println!("Skip: {}", line);
             let result: Vec<usize> = iter.map(|x| x).collect();
@@ -95,14 +92,14 @@ fn run_sentence_break_test() {
 
         {
             println!("UTF16: {}", line);
-            let iter = SentenceBreakIteratorUtf16::new(&u16_vec);
+            let iter = GraphemeBreakIteratorUtf16::new(&u16_vec);
             let result: Vec<usize> = iter.map(|x| x).collect();
             assert_eq!(result, u16_break, "UTF16: {}", line);
         }
 
         if ascii_only {
             println!("Latin1: {}", line);
-            let iter = SentenceBreakIteratorLatin1::new(&u8_vec);
+            let iter = GraphemeBreakIteratorLatin1::new(&u8_vec);
             let result: Vec<usize> = iter.map(|x| x).collect();
             assert_eq!(result, u8_break, "Latin1: {}", line);
         }

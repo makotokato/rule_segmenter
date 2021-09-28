@@ -4,8 +4,9 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
-const WORD_SEGMENTER_JSON: &[u8; 263214] = include_bytes!("data/w.json");
+const WORD_SEGMENTER_JSON: &[u8] = include_bytes!("data/word.json");
 const SENTENCE_SEGMENTER_JSON: &[u8] = include_bytes!("data/sentence.json");
+const GRAPHEME_SEGMENTER_JSON: &[u8] = include_bytes!("data/grapheme.json");
 
 #[derive(Deserialize, Debug)]
 struct SegmenterPropertyValueMap {
@@ -85,7 +86,6 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
     }
 
     println!("Simple count={}", simple_properties_count);
-    let all_properties_count = properties_names.len();
 
     // sot and eot
     properties_names.push("sot".to_string());
@@ -311,4 +311,5 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
 fn main() {
     generate_table("generated_word_table.rs", WORD_SEGMENTER_JSON);
     generate_table("generated_sentence_table.rs", SENTENCE_SEGMENTER_JSON);
+    generate_table("generated_grapheme_table.rs", GRAPHEME_SEGMENTER_JSON);
 }

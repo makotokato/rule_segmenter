@@ -4,13 +4,13 @@ use crate::break_iterator_impl;
 use crate::rule_segmenter::*;
 use crate::utils::{Latin1Indices, Utf16Indices};
 
-include!(concat!(env!("OUT_DIR"), "/generated_word_table.rs"));
+include!(concat!(env!("OUT_DIR"), "/generated_grapheme_table.rs"));
 
-// UTF-8 version of rule based break iterator.
-break_iterator_impl!(WordBreakIterator, CharIndices<'a>, char);
+// UTF-8 version of grapheme break iterator.
+break_iterator_impl!(GraphemeBreakIterator, CharIndices<'a>, char);
 
-impl<'a> WordBreakIterator<'a> {
-    /// Create line break iterator
+impl<'a> GraphemeBreakIterator<'a> {
+    /// Create grapheme break iterator
     pub fn new(input: &'a str) -> Self {
         Self {
             iter: input.char_indices(),
@@ -31,11 +31,11 @@ impl<'a> WordBreakIterator<'a> {
     }
 }
 
-// Latin-1 version of rule based break iterator.
-break_iterator_impl!(WordBreakIteratorLatin1, Latin1Indices<'a>, u8);
+// Latin-1 version of grapheme sentence break iterator.
+break_iterator_impl!(GraphemeBreakIteratorLatin1, Latin1Indices<'a>, u8);
 
-impl<'a> WordBreakIteratorLatin1<'a> {
-    /// Create line break iterator using Latin-1/8-bit string.
+impl<'a> GraphemeBreakIteratorLatin1<'a> {
+    /// Create grapheme break iterator using Latin-1/8-bit string.
     pub fn new(input: &'a [u8]) -> Self {
         Self {
             iter: Latin1Indices::new(input),
@@ -57,11 +57,11 @@ impl<'a> WordBreakIteratorLatin1<'a> {
     }
 }
 
-// UTF-16 version of break iterator.
-break_iterator_impl!(WordBreakIteratorUtf16, Utf16Indices<'a>, u32);
+// UTF-16 version of grapheme break iterator.
+break_iterator_impl!(GraphemeBreakIteratorUtf16, Utf16Indices<'a>, u32);
 
-impl<'a> WordBreakIteratorUtf16<'a> {
-    /// Create line break iterator using UTF-16 string.
+impl<'a> GraphemeBreakIteratorUtf16<'a> {
+    /// Create grapheme break iterator using UTF-16 string.
     pub fn new(input: &'a [u16]) -> Self {
         Self {
             iter: Utf16Indices::new(input),

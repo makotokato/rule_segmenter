@@ -1,13 +1,14 @@
+mod grapheme;
 mod rule_segmenter;
 mod sentence;
 mod utils;
 mod word;
 
-pub use crate::sentence::SentenceBreakIterator;
-pub use crate::sentence::SentenceBreakIteratorLatin1;
-pub use crate::word::WordBreakIterator;
-pub use crate::word::WordBreakIteratorLatin1;
-pub use crate::word::WordBreakIteratorUtf16;
+pub use crate::grapheme::{
+    GraphemeBreakIterator, GraphemeBreakIteratorLatin1, GraphemeBreakIteratorUtf16,
+};
+pub use crate::sentence::{SentenceBreakIterator, SentenceBreakIteratorLatin1, SentenceBreakIteratorUtf16};
+pub use crate::word::{WordBreakIterator, WordBreakIteratorLatin1, WordBreakIteratorUtf16};
 
 #[cfg(test)]
 mod tests {
