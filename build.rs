@@ -329,7 +329,6 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
     )
     .ok();
 
-    let mut i = 0;
     for (i, p) in properties_names.iter().enumerate() {
         writeln!(out, "// {} = {}", p, i).ok();
     }

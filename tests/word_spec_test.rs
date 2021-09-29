@@ -17,10 +17,10 @@ fn run_word_break_test() {
     let f = BufReader::new(f.unwrap());
     for line in f.lines() {
         let line = line.unwrap();
-        if line.starts_with("#") {
+        if line.starts_with('#') {
             continue;
         }
-        let mut r = line.split("#");
+        let mut r = line.split('#');
         let r = r.next();
         let v: Vec<_> = r.unwrap().split_ascii_whitespace().collect();
         let mut char_break: Vec<_> = Vec::new();
@@ -43,59 +43,57 @@ fn run_word_break_test() {
             if count % 2 == 1 {
                 let ch = char::from_u32(u32::from_str_radix(v[count], 16).unwrap()).unwrap();
                 char_vec.push(ch);
-                char_len = char_len + ch.len_utf8();
+                char_len += ch.len_utf8();
 
                 if ch as u32 >= 0x100 {
                     ascii_only = false;
                 } else {
                     u8_vec.push(ch as u8);
-                    u8_len = u8_len + 1;
+                    u8_len += 1;
                 }
 
                 if ch as u32 >= 0x10000 {
                     u16_vec.push((((ch as u32 - 0x10000) >> 10) | 0xd800) as u16);
                     u16_vec.push((((ch as u32) & 0x3ff) | 0xdc00) as u16);
-                    u16_len = u16_len + 2;
+                    u16_len += 2;
                 } else {
                     u16_vec.push(ch as u16);
-                    u16_len = u16_len + 1;
+                    u16_len += 1;
                 }
-            } else {
-                if v[count] != "\u{00d7}" {
-                    assert_eq!(v[count], "\u{00f7}");
-                    char_break.push(char_len);
-                    u8_break.push(u8_len);
-                    u16_break.push(u16_len);
-                }
+            } else if v[count] != "\u{00d7}" {
+                assert_eq!(v[count], "\u{00f7}");
+                char_break.push(char_len);
+                u8_break.push(u8_len);
+                u16_break.push(u16_len);
             }
-            count = count + 1
+            count += 1
         }
         let s: String = char_vec.into_iter().collect();
-        let mut iter = WordBreakIterator::new(&s);
+        let iter = WordBreakIterator::new(&s);
         if failed.contains(&&s.as_str()) {
             println!("Skip: {}", line);
-            let result: Vec<usize> = iter.map(|x| x).collect();
+            let result: Vec<usize> = iter.collect();
             assert_ne!(result, char_break, "{}", line);
             continue;
         }
 
         {
             println!("UTF8: {}", line);
-            let result: Vec<usize> = iter.map(|x| x).collect();
+            let result: Vec<usize> = iter.collect();
             assert_eq!(result, char_break, "{}", line);
         }
 
         {
             println!("UTF16: {}", line);
             let iter = WordBreakIteratorUtf16::new(&u16_vec);
-            let result: Vec<usize> = iter.map(|x| x).collect();
+            let result: Vec<usize> = iter.collect();
             assert_eq!(result, u16_break, "UTF16: {}", line);
         }
 
         if ascii_only {
             println!("Latin1: {}", line);
             let iter = WordBreakIteratorLatin1::new(&u8_vec);
-            let result: Vec<usize> = iter.map(|x| x).collect();
+            let result: Vec<usize> = iter.collect();
             assert_eq!(result, u8_break, "Latin1: {}", line);
         }
     }

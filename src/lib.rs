@@ -18,7 +18,7 @@ mod tests {
     #[test]
     fn rule_break() {
         let s = "\u{0001}\u{00ad}";
-        let mut iter = WordBreakIterator::new(&s);
+        let mut iter = WordBreakIterator::new(s);
         assert_eq!(Some(0), iter.next());
         assert_eq!(Some(3), iter.next());
 
