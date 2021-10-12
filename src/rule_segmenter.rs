@@ -45,18 +45,13 @@ macro_rules! break_iterator_impl {
 
             fn next(&mut self) -> Option<Self::Item> {
                 if self.current_pos_data.is_none() {
-                    self.current_pos_data = self.iter.next();
-                    if self.current_pos_data.is_some() {
-                        // SOT x anything
-                        let right_prop = self.get_break_property();
-                        if self.is_break_from_table(self.sot_property, right_prop) {
-                            return Some(self.current_pos_data.unwrap().0);
-                        }
+                    let current_pos_data = self.iter.next()?;
+                    self.current_pos_data = Some(current_pos_data);
+                    // SOT x anything
+                    let right_prop = self.get_break_property();
+                    if self.is_break_from_table(self.sot_property, right_prop) {
+                        return Some(current_pos_data.0);
                     }
-                }
-
-                if self.is_eof() {
-                    return None;
                 }
 
                 loop {
@@ -137,17 +132,6 @@ macro_rules! break_iterator_impl {
         }
 
         impl<'a> $name<'a> {
-            #[inline]
-            fn is_eof(&mut self) -> bool {
-                if self.current_pos_data.is_none() {
-                    self.current_pos_data = self.iter.next();
-                    if self.current_pos_data.is_none() {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
             fn get_break_state_from_table(&mut self, left: u8, right: u8) -> i8 {
                 //println!("left={} right={}", left, right);
                 //println!(
