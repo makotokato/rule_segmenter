@@ -23,6 +23,7 @@ impl<'a> GraphemeBreakIterator<'a> {
             last_codepoint_property: LAST_CODEPOINT_PROPERTY,
             sot_property: PROP_SOT as u8,
             eot_property: PROP_EOT as u8,
+            complex_property: 127, // Nothing
         }
     }
 
@@ -48,6 +49,7 @@ impl<'a> GraphemeBreakIteratorLatin1<'a> {
             last_codepoint_property: LAST_CODEPOINT_PROPERTY,
             sot_property: PROP_SOT as u8,
             eot_property: PROP_EOT as u8,
+            complex_property: 127, // Nothing
         }
     }
 
@@ -74,6 +76,7 @@ impl<'a> GraphemeBreakIteratorUtf16<'a> {
             last_codepoint_property: LAST_CODEPOINT_PROPERTY,
             sot_property: PROP_SOT as u8,
             eot_property: PROP_EOT as u8,
+            complex_property: 127, // Nothing
         }
     }
 

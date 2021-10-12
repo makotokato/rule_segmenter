@@ -23,6 +23,7 @@ impl<'a> WordBreakIterator<'a> {
             last_codepoint_property: LAST_CODEPOINT_PROPERTY,
             sot_property: PROP_SOT as u8,
             eot_property: PROP_EOT as u8,
+            complex_property: PROP_COMPLEX as u8,
         }
     }
 
@@ -48,6 +49,7 @@ impl<'a> WordBreakIteratorLatin1<'a> {
             last_codepoint_property: LAST_CODEPOINT_PROPERTY,
             sot_property: PROP_SOT as u8,
             eot_property: PROP_EOT as u8,
+            complex_property: PROP_COMPLEX as u8,
         }
     }
 
@@ -74,6 +76,7 @@ impl<'a> WordBreakIteratorUtf16<'a> {
             last_codepoint_property: LAST_CODEPOINT_PROPERTY,
             sot_property: PROP_SOT as u8,
             eot_property: PROP_EOT as u8,
+            complex_property: PROP_COMPLEX as u8,
         }
     }
 

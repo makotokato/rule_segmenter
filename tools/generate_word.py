@@ -59,6 +59,32 @@ def get_emoji_list(property_name):
     return value
 
 
+def get_linebreak(property_name):
+    value = []
+    with open('LineBreak.txt', 'r') as file:
+        line = file.readline()
+        while line:
+            line = line.strip()
+            if not line.startswith('#'):
+                m = re.search("([0-9A-F]{1,6})\.\.([0-9A-F]{1,6})\;([0-9A-Z]{2,})",
+                              line)
+                if m:
+                    if m.group(3) == property_name:
+                        length = int(m.group(2), 16) - int(m.group(1), 16) + 1
+                        s = int(m.group(1), 16)
+                        for x in range(length):
+                            value.append(s + x);
+                else:
+                    m = re.search("([0-9A-F]{1,6})\;([0-9A-Z]{2,})", line)
+                    if m:
+                        if m.group(2) == property_name:
+                            s = int(m.group(1), 16)
+                            value.append(s);
+            line = file.readline()
+    return value
+
+
+
 print("{ \"tables\": [")
 
 # CR
@@ -174,6 +200,13 @@ print("}},")
 v = get_emoji_list("Extended_Pictographic")
 v.sort()
 print("{ \"name\": \"Extended_Pictographic\", \"value\": { \"codepoint\":")
+print(v)
+print("}},")
+
+# SA
+v = get_linebreak("SA")
+v.sort()
+print("{ \"name\": \"SA\", \"value\": { \"codepoint\":")
 print(v)
 print("}},")
 

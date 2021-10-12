@@ -53,8 +53,8 @@ fn set_break_state(
     }
 }
 
-fn get_index_from_name(properties_names: &[String], s: &str) -> usize {
-    properties_names.iter().position(|n| n.eq(s)).unwrap()
+fn get_index_from_name(properties_names: &[String], s: &str) -> Option<usize> {
+    properties_names.iter().position(|n| n.eq(s))
 }
 
 fn generate_table(file_name: &str, json_data: &[u8]) {
@@ -123,7 +123,7 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
                             }
                         }
                     } else {
-                        let right_index = get_index_from_name(&properties_names, r);
+                        let right_index = get_index_from_name(&properties_names, r).unwrap();
                         for i in 0..simple_properties_count {
                             set_break_state(
                                 &mut break_state_table,
@@ -137,7 +137,7 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
                 }
                 continue;
             }
-            let left_index = get_index_from_name(&properties_names, l);
+            let left_index = get_index_from_name(&properties_names, l).unwrap();
             println!("left={} {}", l, left_index);
             for r in &rule.right {
                 // Special case: right is Any
@@ -158,7 +158,7 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
                     }
                     continue;
                 }
-                let right_index = get_index_from_name(&properties_names, r);
+                let right_index = get_index_from_name(&properties_names, r).unwrap();
                 println!("right={} {}", r, right_index);
                 if r != "eot"
                     && break_state_table[left_index * properties_names.len() + right_index]
@@ -197,8 +197,8 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
     for p in &word_segmenter.tables {
         if let Some(left) = p.value.left.clone() {
             if let Some(right) = p.value.right.clone() {
-                let right_index = get_index_from_name(&properties_names, &right);
-                let left_index = get_index_from_name(&properties_names, &left);
+                let right_index = get_index_from_name(&properties_names, &right).unwrap();
+                let left_index = get_index_from_name(&properties_names, &left).unwrap();
 
                 let index = properties_names.iter().position(|n| n.eq(&p.name)).unwrap();
                 println!(
@@ -328,6 +328,9 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
         properties_names.len() - 1
     )
     .ok();
+    if let Some(sa_index) = get_index_from_name(&properties_names, "SA") {
+        writeln!(out, "pub const PROP_COMPLEX: usize = {};", sa_index,).ok();
+    }
 
     for (i, p) in properties_names.iter().enumerate() {
         writeln!(out, "// {} = {}", p, i).ok();

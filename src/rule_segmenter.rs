@@ -1,6 +1,6 @@
-pub const BREAK_RULE: i8 = -128;
-pub const NOT_MATCH_RULE: i8 = -2;
-pub const KEEP_RULE: i8 = -1;
+//pub const BREAK_RULE: i8 = -128;
+//pub const NOT_MATCH_RULE: i8 = -2;
+//pub const KEEP_RULE: i8 = -1;
 
 pub fn get_break_property_utf32(codepoint: u32, property_table: &[&[u8; 1024]; 128]) -> u8 {
     let codepoint = codepoint as usize;
@@ -37,6 +37,7 @@ macro_rules! break_iterator_impl {
             last_codepoint_property: i8,
             sot_property: u8,
             eot_property: u8,
+            complex_property: u8,
         }
 
         impl<'a> Iterator for $name<'a> {
@@ -60,7 +61,6 @@ macro_rules! break_iterator_impl {
 
                 loop {
                     let left_prop = self.get_break_property();
-                    //let left_codepoint = self.current_pos_data;
                     self.current_pos_data = self.iter.next();
 
                     if self.current_pos_data.is_none() {
@@ -71,6 +71,11 @@ macro_rules! break_iterator_impl {
                         return Some(self.len);
                     }
                     let right_prop = self.get_break_property();
+
+                    if right_prop == self.complex_property {
+                        // break before SA
+                        return Some(self.current_pos_data.unwrap().0);
+                    }
 
                     // If break_state is equals or grater than 0, it is alias of property.
                     let mut break_state = self.get_break_state_from_table(left_prop, right_prop);
