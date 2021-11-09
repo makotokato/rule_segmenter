@@ -204,7 +204,7 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
                 let interm_break_state = if p.value.interm_break_state.is_some() {
                     MATCH_RULE_AND_CONITNUE
                 } else {
-                    0 as i8
+                    0_i8
                 };
 
                 let index = properties_names.iter().position(|n| n.eq(&p.name)).unwrap() as i8;
