@@ -7,7 +7,9 @@ mod word;
 pub use crate::grapheme::{
     GraphemeBreakIterator, GraphemeBreakIteratorLatin1, GraphemeBreakIteratorUtf16,
 };
-pub use crate::sentence::{SentenceBreakIterator, SentenceBreakIteratorLatin1, SentenceBreakIteratorUtf16};
+pub use crate::sentence::{
+    SentenceBreakIterator, SentenceBreakIteratorLatin1, SentenceBreakIteratorUtf16,
+};
 pub use crate::word::{WordBreakIterator, WordBreakIteratorLatin1, WordBreakIteratorUtf16};
 
 #[cfg(test)]

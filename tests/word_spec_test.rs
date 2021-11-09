@@ -10,8 +10,7 @@ use std::u32;
 #[test]
 fn run_word_break_test() {
     // no failed tests
-    let failed = [
-    ];
+    let failed = [];
 
     let f = File::open("tests/WordBreakTest.txt");
     let f = BufReader::new(f.unwrap());
