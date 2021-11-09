@@ -90,7 +90,12 @@
 { "name": "STerm_Close_Sp_ParaSep", "value": { "left": "STerm_Close", "right": "LF" }},
 { "name": "STerm_Close_Sp_ParaSep", "value": { "left": "STerm_Close_Sp", "right": "Sep" }},
 { "name": "STerm_Close_Sp_ParaSep", "value": { "left": "STerm_Close_Sp", "right": "CR" }},
-{ "name": "STerm_Close_Sp_ParaSep", "value": { "left": "STerm_Close_Sp", "right": "LF" }}
+{ "name": "STerm_Close_Sp_ParaSep", "value": { "left": "STerm_Close_Sp", "right": "LF" }},
+{ "name": "ATerm_Close_Sp_SB8", "value": { "left": "ATerm_Close_Sp", "right": "Close", "interm_break_state": true }},
+{ "name": "ATerm_Close_Sp_SB8", "value": { "left": "ATerm_Close_Sp", "right": "Numeric", "interm_break_state": true }},
+{ "name": "ATerm_Close_Sp_SB8", "value": { "left": "ATerm_Close_Sp_SB8", "right": "Close" }},
+{ "name": "ATerm_Close_Sp_SB8", "value": { "left": "ATerm_Close_Sp_SB8", "right": "Format" }},
+{ "name": "ATerm_Close_Sp_SB8", "value": { "left": "ATerm_Close_Sp_SB8", "right": "Numeric" }}
 ], "rules": [
 { "left": ["sot"], "right": ["Any"], "break_state": true },
 { "left": ["Sep", "Lower", "Upper", "OLetter", "Numeric", "Extend", "Format"], "right": ["eot"], "break_state": true },
@@ -105,6 +110,7 @@
 { "left": ["Upper_ATerm", "Lower_ATerm"], "right": ["Upper"], "break_state": false },
 { "left": ["ATerm", "ATerm_Close", "ATerm_Close_Sp"], "right": ["Lower"], "break_state": false },
 { "left": ["Lower_ATerm", "Upper_ATerm"], "right": ["Lower"], "break_state": false },
+{ "left": ["ATerm_Close_Sp_SB8"], "right": ["Lower"], "break_state": false },
 { "left": ["ATerm", "ATerm_Close", "ATerm_Close_Sp", "STerm", "STerm_Close", "STerm_Close_Sp", "Lower_ATerm", "Upper_ATerm"], "right": ["SContinue", "ATerm", "STerm"], "break_state": false },
 { "left": ["ATerm_Close_Sp_ParaSep", "STerm_Close_Sp_ParaSep"], "right": ["ATerm", "Lower", "OLetter", "Upper", "Numeric", "STerm"], "break_state": true },
 { "left": ["ATerm_Close_Sp", "STerm_Close_Sp"], "right": ["Numeric", "Upper", "Close"], "break_state": true },

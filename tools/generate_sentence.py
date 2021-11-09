@@ -169,7 +169,9 @@ print("{ \"name\": \"Lower_ATerm\", \"value\": { \"left\": \"Lower\", \"right\":
 # SB8
 print("{ \"name\": \"ATerm_Close\", \"value\": { \"left\": \"ATerm\", \"right\": \"Close\" }},")
 print("{ \"name\": \"ATerm_Close\", \"value\": { \"left\": \"ATerm_Close\", \"right\": \"Close\" }},")
+# Upper * Aterm isn't break. (SB998)
 print("{ \"name\": \"ATerm_Close\", \"value\": { \"left\": \"Upper_ATerm\", \"right\": \"Close\" }},")
+# Lower * Aterm isn't break. (SB998)
 print("{ \"name\": \"ATerm_Close\", \"value\": { \"left\": \"Lower_ATerm\", \"right\": \"Close\" }},")
 print("{ \"name\": \"ATerm_Close_Sp\", \"value\": { \"left\": \"ATerm\", \"right\": \"Sp\" }},")
 print("{ \"name\": \"ATerm_Close_Sp\", \"value\": { \"left\": \"Upper_ATerm\", \"right\": \"Sp\" }},")
@@ -195,7 +197,14 @@ print("{ \"name\": \"STerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"STerm_Cl
 print("{ \"name\": \"STerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"STerm_Close\", \"right\": \"LF\" }},")
 print("{ \"name\": \"STerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"STerm_Close_Sp\", \"right\": \"Sep\" }},")
 print("{ \"name\": \"STerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"STerm_Close_Sp\", \"right\": \"CR\" }},")
-print("{ \"name\": \"STerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"STerm_Close_Sp\", \"right\": \"LF\" }}")
+print("{ \"name\": \"STerm_Close_Sp_ParaSep\", \"value\": { \"left\": \"STerm_Close_Sp\", \"right\": \"LF\" }},")
+
+# SB8
+print("{ \"name\": \"ATerm_Close_Sp_SB8\", \"value\": { \"left\": \"ATerm_Close_Sp\", \"right\": \"Close\", \"interm_break_state\": true }},")
+print("{ \"name\": \"ATerm_Close_Sp_SB8\", \"value\": { \"left\": \"ATerm_Close_Sp\", \"right\": \"Numeric\", \"interm_break_state\": true }},")
+print("{ \"name\": \"ATerm_Close_Sp_SB8\", \"value\": { \"left\": \"ATerm_Close_Sp_SB8\", \"right\": \"Close\" }},")
+print("{ \"name\": \"ATerm_Close_Sp_SB8\", \"value\": { \"left\": \"ATerm_Close_Sp_SB8\", \"right\": \"Format\" }},") #SB5
+print("{ \"name\": \"ATerm_Close_Sp_SB8\", \"value\": { \"left\": \"ATerm_Close_Sp_SB8\", \"right\": \"Numeric\" }}")
 
 # Rules
 
@@ -217,9 +226,11 @@ print("{ \"left\": [\"ATerm_Close_Sp_ParaSep\", \"STerm_Close_Sp_ParaSep\"], \"r
 print("{ \"left\": [\"ATerm\", \"Upper_ATerm\", \"Lower_ATerm\"], \"right\": [\"Numeric\"], \"break_state\": false },")
 # SB7
 print("{ \"left\": [\"Upper_ATerm\", \"Lower_ATerm\"], \"right\": [\"Upper\"], \"break_state\": false },")
-# SB8
+# SB8  - ATerm Close* Sp* × ( ¬(OLetter | Upper | Lower | ParaSep | SATerm) )* Lower )
+#      	                    (Numeric | SContinue | Close)* Lower
 print("{ \"left\": [\"ATerm\", \"ATerm_Close\", \"ATerm_Close_Sp\"], \"right\": [\"Lower\"], \"break_state\": false },")
 print("{ \"left\": [\"Lower_ATerm\", \"Upper_ATerm\"], \"right\": [\"Lower\"], \"break_state\": false },")
+print("{ \"left\": [\"ATerm_Close_Sp_SB8\"], \"right\": [\"Lower\"], \"break_state\": false },")
 # SB8a
 print("{ \"left\": [\"ATerm\", \"ATerm_Close\", \"ATerm_Close_Sp\", \"STerm\", \"STerm_Close\", \"STerm_Close_Sp\", \"Lower_ATerm\", \"Upper_ATerm\"], \"right\": [\"SContinue\", \"ATerm\", \"STerm\"], \"break_state\": false },")
 # SB9

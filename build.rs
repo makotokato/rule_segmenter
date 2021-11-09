@@ -13,6 +13,7 @@ struct SegmenterPropertyValueMap {
     codepoint: Option<Vec<u32>>,
     left: Option<String>,
     right: Option<String>,
+    interm_break_state: Option<bool>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -35,10 +36,11 @@ struct SegmenterRuleTable {
 }
 
 #[allow(dead_code)]
-const BREAK_RULE: i8 = -128;
-const UNKNOWN_RULE: i8 = -127;
-const NOT_MATCH_RULE: i8 = -2;
-const KEEP_RULE: i8 = -1;
+const BREAK_RULE: i8 = -128; // segment break point
+const UNKNOWN_RULE: i8 = -127; // Not define segment
+const NOT_MATCH_RULE: i8 = -2; // segment rule isn't matched
+const KEEP_RULE: i8 = -1; // segment keep rule
+const MATCH_RULE_AND_CONITNUE: i8 = 64; // match rule and may have other rules. This is mask bit.
 
 fn set_break_state(
     break_state_table: &mut [i8],
@@ -199,13 +201,20 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
             if let Some(right) = p.value.right.clone() {
                 let right_index = get_index_from_name(&properties_names, &right).unwrap();
                 let left_index = get_index_from_name(&properties_names, &left).unwrap();
+                let interm_break_state = if p.value.interm_break_state.is_some() {
+                    MATCH_RULE_AND_CONITNUE
+                } else {
+                    0 as i8
+                };
 
-                let index = properties_names.iter().position(|n| n.eq(&p.name)).unwrap();
+                let index = properties_names.iter().position(|n| n.eq(&p.name)).unwrap() as i8;
                 println!(
                     "left={}({}) right={}({}) = {}",
                     left, left_index, right, right_index, index
                 );
-                break_state_table[left_index * property_length + right_index] = index as i8;
+
+                break_state_table[left_index * property_length + right_index] =
+                    index | interm_break_state;
             }
         }
     }
@@ -343,6 +352,8 @@ fn generate_table(file_name: &str, json_data: &[u8]) {
     writeln!(out, "pub const NOT_MATCH_RULE: i8 = -2;").ok();
     writeln!(out, "#[allow(dead_code)]").ok();
     writeln!(out, "pub const KEEP_RULE: i8 = -1;").ok();
+    writeln!(out, "#[allow(dead_code)]").ok();
+    writeln!(out, "pub const MATCH_RULE_AND_CONTINUE: i8 = 64;").ok();
 }
 
 fn main() {
